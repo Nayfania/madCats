@@ -1,0 +1,142 @@
+class Scene extends Phaser.Scene {
+    player;
+    enemies;
+    gameOver = false;
+    lastFired;
+
+    constructor() {
+        super();
+    }
+
+    preload() {
+        this.load.image('bg', 'img/seamless-texture-cracked-old-stone-tiles.jpg');
+        this.load.image('block', 'img/Swordsman_Cat.webp');
+        this.load.image('enemy', 'img/Swordsman_Cat.webp');
+        this.load.image('bullet', 'img/arrow.png');
+    }
+
+    create() {
+        this.speed = Phaser.Math.GetSpeed(400, 1) * 1000;
+        //  Set the camera and physics bounds to be the size of 4x4 bg images
+        this.cameras.main.setBounds(0, 0, config.battleGround.width, config.battleGround.height);
+        this.physics.world.setBounds(0, 0, config.battleGround.width, config.battleGround.height);
+
+        //  Mash 4 images together to create our background
+        this.add.image(0, 0, 'bg').setOrigin(0);
+        this.add.image(1800, 0, 'bg').setOrigin(0).setFlipX(true);
+        this.add.image(0, 900, 'bg').setOrigin(0).setFlipY(true);
+        this.add.image(1800, 900, 'bg').setOrigin(0).setFlipX(true).setFlipY(true);
+
+        this.cursors = this.input.keyboard.createCursorKeys();
+
+        this.player = this.physics.add.image(950, 350, 'block');
+        this.player.setCollideWorldBounds(true);
+        this.player.health = 10;
+
+        this.enemies = this.physics.add.group({
+            key: 'enemy',
+            repeat: 9,
+            setXY: {x: 120, y: 150, stepX: 270}
+        });
+
+        this.scoreText = this.add.text(16, 16, 'Health: 0', {fontSize: '32px', fill: '#cb1414'});
+        this.scoreText.setScrollFactor(0, 0);
+
+        this.cameras.main.setSize(this.scale.width, this.scale.height);
+        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+
+        // this.physics.add.collider(this.player, this.enemies);
+        this.physics.add.overlap(this.player, this.enemies, this.damagePlayer, null, this);
+
+        class Bullet extends Phaser.GameObjects.Image {
+            hit = false;
+            constructor(scene) {
+                super(scene, 0, 0, 'bullet');
+            }
+
+            update(time, delta) {
+                if (this.hit || this.y < 0 || this.y > config.battleGround.height || this.x < 0 || this.x > config.battleGround.width) {
+                    this.setActive(false);
+                    this.setVisible(false);
+                    this.x = 0;
+                    this.y = 0;
+                }
+                // console.log('this.y: ' + this.y + ' this.x: ' + this.x);
+            }
+        }
+
+        this.bullets = this.physics.add.group({classType: Bullet, maxSize: 10, runChildUpdate: true});
+        this.physics.add.overlap(this.bullets, this.enemies, this.damageEnemy, null, this);
+    }
+
+    update(time, delta) {
+        this.player.setVelocity(0);
+        // if (this.gameOver) {
+        //     return;
+        // }
+
+        if (this.cursors.left.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Left
+            this.player.setVelocityX(-this.speed);
+        } else if (this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Right
+            this.player.setVelocityX(this.speed);
+        } else if (this.cursors.up.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Up
+            this.player.setVelocityY(-this.speed);
+        } else if (this.cursors.down.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Down
+            this.player.setVelocityY(this.speed);
+        } else if (this.cursors.left.isDown && this.cursors.up.isDown) { // Up and Left
+            this.player.setVelocityX(-this.speed);
+            this.player.setVelocityY(-this.speed);
+        } else if (this.cursors.right.isDown && this.cursors.up.isDown) { // Up and Right
+            this.player.setVelocityX(this.speed);
+            this.player.setVelocityY(-this.speed);
+        } else if (this.cursors.right.isDown && this.cursors.down.isDown) { // Down and Right
+            this.player.setVelocityX(this.speed);
+            this.player.setVelocityY(this.speed);
+        } else if (this.cursors.left.isDown && this.cursors.down.isDown) { // Down and Left
+            this.player.setVelocityX(-this.speed);
+            this.player.setVelocityY(this.speed);
+        }
+
+        if (this.input.activePointer.isDown) {
+            const bullet = this.bullets.get();
+            if (bullet) {
+                this.bullets.remove()
+                bullet.hit = false;
+                bullet.setPosition(this.player.x, this.player.y - 50);
+                bullet.setActive(true);
+                bullet.setVisible(true);
+                const worldPoint = this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y);
+                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, this.speed*2);
+                // console.log(this.input.activePointer.x, this.input.activePointer.y);
+                // console.log(this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y));
+            }
+        }
+
+        this.enemies.children.each(function(enemy) {
+            this.physics.moveTo(enemy, this.player.x, this.player.y, this.speed/2);
+        }, this);
+
+        this.scoreText.text = 'Health: ' + this.player.health;
+        // console.log('time: ' + time + ' delta: ' + delta);
+    }
+
+    damagePlayer(player, enemy) {
+        player.health--;
+        enemy.disableBody(true, true);
+
+        player.setTint(0xff0000);
+        // this.physics.pause();
+        player.setTint(0xffffff);
+
+        if (player.health === 0) {
+            this.gameOver = true;
+        }
+        console.log('damagePlayer');
+    }
+
+    damageEnemy(bullet, enemy) {
+        enemy.disableBody(true, true);
+        bullet.hit = true;
+        console.log('damageEnemy');
+    }
+}
