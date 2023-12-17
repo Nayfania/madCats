@@ -2,7 +2,8 @@ class Scene extends Phaser.Scene {
     player;
     enemies;
     gameOver = false;
-    lastFired;
+    lastFired = 0;
+    timeline;
 
     constructor() {
         super();
@@ -38,6 +39,9 @@ class Scene extends Phaser.Scene {
             repeat: 2,
             setXY: {x: 120, y: 150, stepX: 270}
         });
+        this.enemies.children.each(function (enemy) {
+            enemy.health = 5;
+        }, this);
 
         this.scoreText = this.add.text(16, 16, 'Health: 0', {fontSize: '32px', fill: '#cb1414'});
         this.scoreText.setScrollFactor(0, 0);
@@ -50,6 +54,9 @@ class Scene extends Phaser.Scene {
 
         this.bullets = this.physics.add.group({classType: Bullet, maxSize: 1000, runChildUpdate: true});
         this.physics.add.overlap(this.bullets, this.enemies, this.damageEnemy, null, this);
+
+        this.timeline = this.add.timeline();
+        this.timeline.play();
     }
 
     update(time, delta) {
@@ -62,21 +69,22 @@ class Scene extends Phaser.Scene {
 
         if (this.input.activePointer.isDown) {
             const bullet = this.bullets.get();
-            if (bullet) {
-                this.bullets.remove()
+            // console.log(time, this.lastFired);
+            if (bullet && time > (this.lastFired + 300)) {
+                this.lastFired = time;
                 bullet.hit = false;
-                bullet.setPosition(this.player.x, this.player.y - 50);
+                bullet.setPosition(this.player.x - 50, this.player.y - 5);
                 bullet.setActive(true);
                 bullet.setVisible(true);
                 const worldPoint = this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y);
-                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, this.speed*2);
+                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, this.player.speed * 3);
                 // console.log(this.input.activePointer.x, this.input.activePointer.y);
                 // console.log(this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y));
             }
         }
 
-        this.enemies.children.each(function(enemy) {
-            this.physics.moveTo(enemy, this.player.x, this.player.y, this.speed/2);
+        this.enemies.children.each(function (enemy) {
+            this.physics.moveTo(enemy, this.player.x, this.player.y, this.player.speed / 2);
         }, this);
 
         this.scoreText.text = 'Health: ' + this.player.health;
@@ -118,8 +126,11 @@ class Scene extends Phaser.Scene {
         enemy.disableBody(true, true);
 
         player.setTint(0xff0000);
-        // this.physics.pause();
-        player.setTint(0xffffff);
+        this.timeline.add({
+            in: 100, once: false, run: () => {
+                player.setTint();
+            }
+        });
 
         if (player.health === 0) {
             this.gameOver = true;
@@ -128,8 +139,20 @@ class Scene extends Phaser.Scene {
     }
 
     damageEnemy(bullet, enemy) {
-        enemy.disableBody(true, true);
+
+        enemy.setTint(0xff0000);
+        this.timeline.add({
+            in: 100, once: false, run: () => {
+                enemy.setTint();
+            }
+        });
+
+        enemy.health -= 1;
+        if (enemy.health === 0) {
+            enemy.disableBody(true, true);
+        }
         bullet.hit = true;
         console.log('damageEnemy');
+        console.log('enemy health: ' + enemy.health);
     }
 }
