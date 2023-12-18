@@ -1,7 +1,8 @@
 class Player {
     scene;
     player;
-    constructor(scene) {
+
+    setScene(scene) {
         this.scene = scene.scene;
     }
 
@@ -12,8 +13,11 @@ class Player {
             frameRate: 8,
         });
         this.player = this.scene.physics.add.sprite(1280, 1300);
+        this.player.preFX.addGlow();
+        // this.player.preFX.addShadow();
+        // this.player.postFX.addShadow();
         this.animateIdle();
-        this.triggerTimer = this.scene.time.addEvent({
+        this.scene.time.addEvent({
             callback: this.animateIdle,
             callbackScope: this,
             delay: 5000, // 1000 = 1 second
@@ -24,8 +28,9 @@ class Player {
         this.player.setCollideWorldBounds(true);
         this.player.health = 100;
         this.player.currentHealth = 100;
-        this.player.speed = Phaser.Math.GetSpeed(400, 1) * 1000;
+        this.player.speed = Phaser.Math.GetSpeed(300, 1) * 1000;
         this.player.damage = 5;
+        this.player.expirience = 0;
     }
 
     animateIdle(){
