@@ -1,16 +1,35 @@
 class Player {
     scene;
+    player;
     constructor(scene) {
         this.scene = scene.scene;
     }
 
     create() {
-        this.player = this.scene.physics.add.image(1280, 1024, 'cat');
+        this.scene.anims.create({
+            key: 'idle',
+            frames: this.scene.anims.generateFrameNumbers('player', { frames: [ 0, 1, 2, 2, 1, 0 ], end: 0 }),
+            frameRate: 8,
+        });
+        this.player = this.scene.physics.add.sprite(1280, 1300);
+        this.animateIdle();
+        this.triggerTimer = this.scene.time.addEvent({
+            callback: this.animateIdle,
+            callbackScope: this,
+            delay: 5000, // 1000 = 1 second
+            loop: true
+        });
+
+        // this.player = this.scene.physics.add.image(1280, 1024, 'cat');
         this.player.setCollideWorldBounds(true);
         this.player.health = 100;
         this.player.currentHealth = 100;
         this.player.speed = Phaser.Math.GetSpeed(400, 1) * 1000;
         this.player.damage = 5;
+    }
+
+    animateIdle(){
+        this.player.play('idle');
     }
 
     get() {

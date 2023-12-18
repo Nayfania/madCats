@@ -11,6 +11,7 @@ class Scene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.spritesheet('player', 'img/cat.png', { frameWidth: 117, frameHeight: 147 });
         this.load.image('bg', 'img/background.jpeg');
         this.load.image('cat', 'img/cat.png');
         this.load.image('enemy', 'img/rat.png');
@@ -39,6 +40,7 @@ class Scene extends Phaser.Scene {
 
         this.scoreText = this.add.text(16, 16, 'Health: 0', {fontSize: '32px', fill: '#cb1414'});
         this.scoreText.setScrollFactor(0, 0);
+        this.scoreText.setShadow(2, 2);
 
         this.cameras.main.setSize(this.scale.width, this.scale.height);
         this.cameras.main.startFollow(this.player.get(), true, 0.05, 0.05);
