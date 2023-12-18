@@ -82,6 +82,7 @@ class Scene extends Phaser.Scene {
                 bullet.damage = player.get().damage;
                 const worldPoint = this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y);
                 this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, player.get().speed * 5);
+                bullet.rotation = Math.atan2(player.get().y - worldPoint.y, player.get().x - worldPoint.x);
             }
         }
 
