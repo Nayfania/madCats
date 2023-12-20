@@ -14,12 +14,17 @@ class Spawn {
     }
 
     next() {
-        const span = 200;
+        const spawn = this.spawns[this.spawnNumber];
+        const minX = this.player.get().x - (this.scene.sys.game.config.width / 2);
+        const minY = this.player.get().y - (this.scene.sys.game.config.height / 2);
+
         this.enemies = this.scene.physics.add.group();
-        for (let i = 0; i <= 5; i++) {
-            const enemy = this.scene.physics.add.image(1120 + (span*i), 500, 'enemy');
-            enemy.health = 50;
-            enemy.damage = 10;
+        for (let i = 0; i <= spawn.quantity; i++) {
+            const enemy = this.scene.physics.add.image(0, 0, spawn.name);
+            enemy.setRandomPosition(minX, minY);
+            enemy.health = spawn.health;
+            enemy.damage = spawn.damage;
+            enemy.experience = spawn.experience;
             this.enemies.add(enemy);
         }
 

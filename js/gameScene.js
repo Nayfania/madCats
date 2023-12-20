@@ -111,7 +111,16 @@ class Scene extends Phaser.Scene {
             this.physics.moveTo(enemy, player.get().x, player.get().y, player.get().speed / 2);
         }, this);
 
-        this.scoreText.text = 'Health: ' + this.player.get().currentHealth;
+        if (this.enemies.getTotalUsed() === 0) {
+            if (this.spawn.hasNext()) {
+                this.enemies = this.spawn.next();
+                this.physics.add.overlap(player.get(), this.enemies, this.damagePlayer, null, this);
+                this.physics.add.overlap(this.bullets, this.enemies, this.damageEnemy, null, this);
+            } else {
+                this.win();
+            }
+        }
+        // console.log('this.enemies: ' + this.enemies.getTotalUsed());
         // console.log('time: ' + time + ' delta: ' + delta);
     }
 
