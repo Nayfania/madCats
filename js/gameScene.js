@@ -12,6 +12,8 @@ class Scene extends Phaser.Scene {
     }
 
     preload() {
+        // this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
+        // this.load.scenePlugin('floatingNumbersPlugin', '/js/FloatingNumbersPlugin.js', 'floatingNumbersPlugin', 'floatingNumbers');
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.image('bg', 'img/background.jpeg');
         this.load.image('cat', 'img/cat.png');
@@ -74,7 +76,6 @@ class Scene extends Phaser.Scene {
         this.events.on('wake', () => {
             console.log('GameScene wake');
         });
-
     }
 
     update(time, delta) {
@@ -134,6 +135,7 @@ class Scene extends Phaser.Scene {
         });
 
         this.cameras.main.shake(50, 0.005, true);
+        this.showDamage(enemy.damage, player);
 
         console.log('damagePlayer');
         console.log('player.currentHealth: ' + player.currentHealth);
@@ -155,9 +157,41 @@ class Scene extends Phaser.Scene {
             console.log('experience: ' + player.get().experience);
         }
         bullet.hit = true;
+
+        this.showDamage(bullet.damage, enemy);
         console.log('damageEnemy');
         // console.log('enemy health: ' + enemy.health);
         // console.log('bullet.damage: ' + bullet.damage);
+    }
+
+    showDamage(text, object) {
+        var floatingNumbers = new FloatingNumbersPlugin(this, Phaser.Plugins.BasePlugin);
+        floatingNumbers.createFloatingText({
+            textOptions: {
+                fontFamily: 'shrewsbury',
+                fontSize: 42,
+                color: "#ff0000",
+                strokeThickness: 2,
+                fontWeight: "bold",
+                stroke: "#000000",
+                shadow: {
+                    offsetX: 0,
+                    offsetY: 0,
+                    color: '#000',
+                    blur: 4,
+                    stroke: true,
+                    fill: false
+                }
+            },
+            text: text,
+            align: "top-center",
+            parentObject: object,
+            animation: "up", // "smoke", "explode", "fade", "up"
+            animationEase: "Linear",
+            timeToLive: 500,
+            animationDistance: 50,
+            fixedToCamera: false,
+        });
     }
 
     gameOver() {
