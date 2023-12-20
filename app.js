@@ -1,4 +1,4 @@
-const config = {
+var game = new Phaser.Game({
     width: 1900,
     height: 900,
     battleGround: {width: 1280 * 2, height: 1024 * 2},
@@ -6,5 +6,6 @@ const config = {
     physics: {
         default: 'arcade',
     },
-    scene: Scene
-};
+    scene: [Scene, Menu]
+});
+// game.scene.getScene('Demo').setVisible(false);

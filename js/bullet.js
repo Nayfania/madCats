@@ -5,7 +5,7 @@ class Bullet extends Phaser.GameObjects.Image {
     }
 
     update(time, delta) {
-        if (this.hit || this.y <= 0 || this.y > config.battleGround.height || this.x <= 0 || this.x > config.battleGround.width) {
+        if (this.hit || this.y <= 0 || this.y > Scene.battleGround.height || this.x <= 0 || this.x > Scene.battleGround.width) {
             this.setActive(false);
             this.setVisible(false);
             this.destroy();

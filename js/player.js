@@ -29,8 +29,8 @@ class Player {
         this.player.health = 100;
         this.player.currentHealth = 100;
         this.player.speed = Phaser.Math.GetSpeed(300, 1) * 1000;
-        this.player.damage = 5;
-        this.player.expirience = 0;
+        this.player.damage = 1;
+        this.player.experience = 0;
     }
 
     animateIdle(){

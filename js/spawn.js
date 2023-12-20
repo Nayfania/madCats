@@ -1,10 +1,16 @@
 class Spawn {
     scene;
+    player;
     enemies;
-    spawn = 1;
+    spawnNumber = 0;
+    spawns = [
+        {name: 'rat', quantity: 10, health: 5, damage: 1, experience: 1},
+        {name: 'waran', quantity: 20, health: 10, damage: 5, experience: 2}
+    ];
 
-    constructor(scene) {
+    constructor(scene, player) {
         this.scene = scene.scene;
+        this.player = player;
     }
 
     next() {
@@ -17,8 +23,12 @@ class Spawn {
             this.enemies.add(enemy);
         }
 
-        this.spawn++;
+        this.spawnNumber++;
 
         return this.enemies;
+    }
+
+    hasNext() {
+        return this.spawnNumber in this.spawns;
     }
 }

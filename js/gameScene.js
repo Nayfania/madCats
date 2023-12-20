@@ -5,9 +5,10 @@ class Scene extends Phaser.Scene {
     lastFired = 0;
     timeline;
     heart;
+    static battleGround = {width: 1280 * 2, height: 1024 * 2};
 
     constructor() {
-        super();
+        super({key: 'GameScene'});
     }
 
     preload() {
@@ -15,14 +16,15 @@ class Scene extends Phaser.Scene {
         this.load.image('bg', 'img/background.jpeg');
         this.load.image('cat', 'img/cat.png');
         this.load.image('rat', 'img/rat.png');
+        this.load.image('waran', 'img/waran.png');
         this.load.image('bullet', 'img/arrow.png');
         this.load.image('heart', 'img/heart.png');
     }
 
     create() {
         //  Set the camera and physics bounds to be the size of 4x4 bg images
-        this.cameras.main.setBounds(0, 0, config.battleGround.width, config.battleGround.height);
-        this.physics.world.setBounds(0, 0, config.battleGround.width, config.battleGround.height);
+        this.cameras.main.setBounds(0, 0, Scene.battleGround.width, Scene.battleGround.height);
+        this.physics.world.setBounds(0, 0, Scene.battleGround.width, Scene.battleGround.height);
 
         new Background(this.scene);
 
@@ -37,31 +39,49 @@ class Scene extends Phaser.Scene {
 
         this.spawn = new Spawn(this.scene, player);
         this.enemies = this.spawn.next();
+        // this.physics.add.collider(player.get(), this.enemies);
         this.physics.add.overlap(player.get(), this.enemies, this.damagePlayer, null, this);
 
         this.score = this.add.text(16, 16, 'Health: 0', {fontSize: '32px', fill: '#cb1414'});
         this.score.setScrollFactor(0, 0);
         this.score.setShadow(2, 2);
 
-        this.expirience = this.add.text(16, 250, 'Exp: 0', {fontSize: '32px', fill: '#06ad0d'});
-        this.expirience.setScrollFactor(0, 0);
-        this.expirience.setShadow(2, 2);
+        this.experience = this.add.text(16, 250, 'Exp: 0', {fontSize: '32px', fill: '#06ad0d'});
+        this.experience.setScrollFactor(0, 0);
+        this.experience.setShadow(2, 2);
 
         this.cameras.main.setSize(this.scale.width, this.scale.height);
         this.cameras.main.startFollow(player.get(), true, 0.05, 0.05);
+        // this.cameras.main.postFX.addVignette(0.5, 0.5, 0.7, 0.3);
 
         this.bullets = this.physics.add.group({classType: Bullet, maxSize: 100, runChildUpdate: true});
         this.physics.add.overlap(this.bullets, this.enemies, this.damageEnemy, null, this);
 
         this.timeline = this.add.timeline();
         this.timeline.play();
+
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).on('down', function (event) {
+            console.log('ESC');
+            // game.scene.getScene('GameScene').scene.scene.input.keyboard.removeKey('ESC');
+            // game.scene.getScene('MenuScene').scene.scene.input.keyboard.addKey('ESC');
+            game.scene.switch('GameScene', 'MenuScene');
+        });
+
+        this.events.on('sleep', () => {
+            console.log('GameScene slept');
+        });
+
+        this.events.on('wake', () => {
+            console.log('GameScene wake');
+        });
+
     }
 
     update(time, delta) {
         player.get().setVelocity(0);
 
         this.score.text = 'Health: ' + player.get().currentHealth;
-        this.expirience.text = 'Exp: ' + player.get().expirience;
+        this.experience.text = 'Exp: ' + player.get().experience;
 
         if (player.get().currentHealth <= 0) {
             this.gameOver();
@@ -131,8 +151,8 @@ class Scene extends Phaser.Scene {
         enemy.health -= bullet.damage;
         if (enemy.health <= 0) {
             enemy.disableBody(true, true);
-            player.get().expirience++;
-            console.log('expirience: ' + player.get().expirience);
+            player.get().experience += enemy.experience;
+            console.log('experience: ' + player.get().experience);
         }
         bullet.hit = true;
         console.log('damageEnemy');
@@ -142,8 +162,12 @@ class Scene extends Phaser.Scene {
 
     gameOver() {
         this.physics.pause();
+        game.scene.pause('GameScene');
 
-        var gameOver = this.add.text(player.get().x - 500, player.get().y - 100, 'YOU DIED', {fontSize: '210px', fill: '#cb1414'});
+        var gameOver = this.add.text(player.get().x - 500, player.get().y - 100, 'YOU DIED', {
+            fontSize: '210px',
+            fill: '#cb1414'
+        });
         gameOver.setShadow(3, 3);
     }
 }
