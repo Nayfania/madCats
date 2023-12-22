@@ -5,6 +5,7 @@ class Scene extends Phaser.Scene {
     lastFired = 0;
     timeline;
     heart;
+    expBar;
     static battleGround = {width: 1280 * 2, height: 1024 * 2};
 
     constructor() {
@@ -12,12 +13,12 @@ class Scene extends Phaser.Scene {
     }
 
     preload() {
-        // this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
-        // this.load.scenePlugin('floatingNumbersPlugin', '/js/FloatingNumbersPlugin.js', 'floatingNumbersPlugin', 'floatingNumbers');
+        this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
+        this.load.spritesheet('player2', 'img/cat2.png', {frameWidth: 117, frameHeight: 147});
         this.load.image('bg', 'img/background.jpeg');
-        this.load.image('cat', 'img/cat.png');
         this.load.image('rat', 'img/rat.png');
+        this.load.image('rat2', 'img/rat2.png');
         this.load.image('waran', 'img/waran.png');
         this.load.image('bullet', 'img/arrow.png');
         this.load.image('heart', 'img/heart.png');
@@ -44,13 +45,9 @@ class Scene extends Phaser.Scene {
         // this.physics.add.collider(player.get(), this.enemies);
         this.physics.add.overlap(player.get(), this.enemies, this.damagePlayer, null, this);
 
-        this.score = this.add.text(16, 16, 'Health: 0', {fontSize: '32px', fill: '#cb1414'});
+        this.score = this.add.text(16, 16, 'Health: '+player.get().currentHealth, {fontSize: '32px', fill: '#cb1414'});
         this.score.setScrollFactor(0, 0);
         this.score.setShadow(2, 2);
-
-        this.experience = this.add.text(16, 250, 'Exp: 0', {fontSize: '32px', fill: '#06ad0d'});
-        this.experience.setScrollFactor(0, 0);
-        this.experience.setShadow(2, 2);
 
         this.cameras.main.setSize(this.scale.width, this.scale.height);
         this.cameras.main.startFollow(player.get(), true, 0.05, 0.05);
@@ -76,13 +73,57 @@ class Scene extends Phaser.Scene {
         this.events.on('wake', () => {
             console.log('GameScene wake');
         });
+
+        var expBar = this.rexUI.add.expBar({
+                width: 1000,
+                background: this.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e),
+                // icon: this.add.rectangle(0, 0, 20, 20, COLOR_LIGHT),
+                nameText: this.add.text(0, 0, 'LEVEL 1', { fontSize: 24 }),
+                valueText: this.rexUI.add.BBCodeText(0, 0, '', { fontSize: 24 }),
+                valueTextFormatCallback: function (value, min, max) {
+                    value = Math.floor(value);
+                    return `[b]${value}[/b]/${max}`;
+                },
+                bar: {
+                    height: 10,
+                    barColor: 0x7b5e57,
+                    trackColor: 0x260e04,
+                    // trackStrokeColor: COLOR_LIGHT
+                },
+                align: {},
+                space: {
+                    left: 20, right: 20, top: 20, bottom: 20,
+                    icon: 10,
+                    bar: 10
+                },
+                levelCounter: {
+                    table: [0, 0, 10, 20, 30, 100],
+                    maxLevel: 10,
+                    exp: 0,
+                },
+                easeDuration: 2000
+            });
+        this.expBar = expBar;
+        this.expBar.setLevel(1);
+        this.expBar.setScrollFactor(0, 0);
+        this.expBar.setPosition(1000, 50)
+            .layout()
+            .on('levelup.start', function (level, val) {
+                console.log('levelup.start', level)
+                // expBar.nameText = 'LEVEL '+level;
+            })
+            .on('levelup.end', function (level) {
+                console.log('levelup.end', level)
+                // this.expBar.setValueText(level);
+                expBar.nameText = 'LEVEL '+level;
+            })
+            .on('levelup.complete', function () {
+                console.log('levelup.complete')
+            });
     }
 
     update(time, delta) {
         player.get().setVelocity(0);
-
-        this.score.text = 'Health: ' + player.get().currentHealth;
-        this.experience.text = 'Exp: ' + player.get().experience;
 
         if (player.get().currentHealth <= 0) {
             this.gameOver();
@@ -144,10 +185,12 @@ class Scene extends Phaser.Scene {
         });
 
         this.cameras.main.shake(50, 0.005, true);
-        this.showDamage(enemy.damage, player);
+        this.showDamage(enemy.damage, player, "#ff0000");
+
+        this.score.text = 'Health: ' + player.currentHealth;
 
         console.log('damagePlayer');
-        console.log('player.currentHealth: ' + player.currentHealth);
+        // console.log('player.currentHealth: ' + player.currentHealth);
     }
 
     damageEnemy(bullet, enemy) {
@@ -163,23 +206,24 @@ class Scene extends Phaser.Scene {
         if (enemy.health <= 0) {
             enemy.disableBody(true, true);
             player.get().experience += enemy.experience;
+            this.expBar.gainExp(enemy.experience);
             console.log('experience: ' + player.get().experience);
         }
         bullet.hit = true;
 
-        this.showDamage(bullet.damage, enemy);
+        this.showDamage(bullet.damage, enemy, "#ffffff");
         console.log('damageEnemy');
         // console.log('enemy health: ' + enemy.health);
         // console.log('bullet.damage: ' + bullet.damage);
     }
 
-    showDamage(text, object) {
+    showDamage(text, object, color) {
         var floatingNumbers = new FloatingNumbersPlugin(this, Phaser.Plugins.BasePlugin);
         floatingNumbers.createFloatingText({
             textOptions: {
                 fontFamily: 'shrewsbury',
                 fontSize: 42,
-                color: "#ff0000",
+                color: color,
                 strokeThickness: 2,
                 fontWeight: "bold",
                 stroke: "#000000",

@@ -9,7 +9,7 @@ class Player {
     create() {
         this.scene.anims.create({
             key: 'idle',
-            frames: this.scene.anims.generateFrameNumbers('player', { frames: [ 0, 1, 2, 2, 1, 0 ], end: 0 }),
+            frames: this.scene.anims.generateFrameNumbers('player2', { frames: [ 0, 1, 2, 2, 1, 0 ], end: 0 }),
             frameRate: 8,
         });
         this.player = this.scene.physics.add.sprite(1280, 1300);

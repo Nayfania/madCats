@@ -2,15 +2,21 @@ class Spawn {
     scene;
     player;
     enemies;
+    wave;
     spawnNumber = 0;
     spawns = [
-        {name: 'rat', quantity: 10, health: 5, damage: 1, experience: 1},
-        {name: 'waran', quantity: 20, health: 10, damage: 5, experience: 2}
+        {name: 'rat', quantity: 10, health: 1, damage: 1, experience: 1},
+        {name: 'rat2', quantity: 20, health: 5, damage: 5, experience: 2},
+        {name: 'waran', quantity: 20, health: 10, damage: 5, experience: 2},
     ];
 
     constructor(scene, player) {
         this.scene = scene.scene;
         this.player = player;
+
+        this.wave = this.scene.add.text(16, 250, 'Wave: 1', {fontSize: '32px', fill: '#06ad0d'});
+        this.wave.setScrollFactor(0, 0);
+        this.wave.setShadow(2, 2);
     }
 
     next() {
@@ -29,6 +35,8 @@ class Spawn {
         }
 
         this.spawnNumber++;
+
+        this.wave.text = 'Wave: '+this.spawnNumber;
 
         return this.enemies;
     }
