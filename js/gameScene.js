@@ -9,13 +9,29 @@ class Scene extends Phaser.Scene {
     static battleGround = {width: 1280 * 2, height: 1024 * 2};
 
     constructor() {
-        super({key: 'GameScene'});
+        super({
+            key: 'GameScene',
+            pack: {
+                files: [{
+                    type: 'plugin',
+                    key: 'rexscripttagloaderplugin',
+                    url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexscripttagloaderplugin.min.js',
+                    start: true
+                }]
+            }
+        });
     }
 
     preload() {
+        this.plugins.get('rexscripttagloaderplugin').addToScene(this);
+
+        this.load.rexScriptTag('js/health-bar-plugin/HealthBar.js');
+
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
+
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.spritesheet('player2', 'img/cat2.png', {frameWidth: 117, frameHeight: 147});
+
         this.load.image('bg', 'img/background.jpeg');
         this.load.image('rat', 'img/rat.png');
         this.load.image('rat2', 'img/rat2.png');
@@ -25,6 +41,7 @@ class Scene extends Phaser.Scene {
     }
 
     create() {
+
         //  Set the camera and physics bounds to be the size of 4x4 bg images
         this.cameras.main.setBounds(0, 0, Scene.battleGround.width, Scene.battleGround.height);
         this.physics.world.setBounds(0, 0, Scene.battleGround.width, Scene.battleGround.height);
@@ -45,7 +62,10 @@ class Scene extends Phaser.Scene {
         // this.physics.add.collider(player.get(), this.enemies);
         this.physics.add.overlap(player.get(), this.enemies, this.damagePlayer, null, this);
 
-        this.score = this.add.text(16, 16, 'Health: '+player.get().currentHealth, {fontSize: '32px', fill: '#cb1414'});
+        this.score = this.add.text(16, 16, 'Health: ' + player.get().currentHealth, {
+            fontSize: '32px',
+            fill: '#cb1414'
+        });
         this.score.setScrollFactor(0, 0);
         this.score.setShadow(2, 2);
 
@@ -75,34 +95,34 @@ class Scene extends Phaser.Scene {
         });
 
         var expBar = this.rexUI.add.expBar({
-                width: 1000,
-                background: this.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e),
-                // icon: this.add.rectangle(0, 0, 20, 20, COLOR_LIGHT),
-                nameText: this.add.text(0, 0, 'LEVEL 1', { fontSize: 24 }),
-                valueText: this.rexUI.add.BBCodeText(0, 0, '', { fontSize: 24 }),
-                valueTextFormatCallback: function (value, min, max) {
-                    value = Math.floor(value);
-                    return `[b]${value}[/b]/${max}`;
-                },
-                bar: {
-                    height: 10,
-                    barColor: 0x7b5e57,
-                    trackColor: 0x260e04,
-                    // trackStrokeColor: COLOR_LIGHT
-                },
-                align: {},
-                space: {
-                    left: 20, right: 20, top: 20, bottom: 20,
-                    icon: 10,
-                    bar: 10
-                },
-                levelCounter: {
-                    table: [0, 0, 10, 20, 30, 100],
-                    maxLevel: 10,
-                    exp: 0,
-                },
-                easeDuration: 2000
-            });
+            width: 1000,
+            background: this.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e),
+            // icon: this.add.rectangle(0, 0, 20, 20, COLOR_LIGHT),
+            nameText: this.add.text(0, 0, 'LEVEL 1', {fontSize: 24}),
+            valueText: this.rexUI.add.BBCodeText(0, 0, '', {fontSize: 24}),
+            valueTextFormatCallback: function (value, min, max) {
+                value = Math.floor(value);
+                return `[b]${value}[/b]/${max}`;
+            },
+            bar: {
+                height: 10,
+                barColor: 0x7b5e57,
+                trackColor: 0x260e04,
+                // trackStrokeColor: COLOR_LIGHT
+            },
+            align: {},
+            space: {
+                left: 20, right: 20, top: 20, bottom: 20,
+                icon: 10,
+                bar: 10
+            },
+            levelCounter: {
+                table: [0, 0, 10, 20, 30, 100],
+                maxLevel: 10,
+                exp: 0,
+            },
+            easeDuration: 2000
+        });
         this.expBar = expBar;
         this.expBar.setLevel(1);
         this.expBar.setScrollFactor(0, 0);
@@ -115,7 +135,7 @@ class Scene extends Phaser.Scene {
             .on('levelup.end', function (level) {
                 console.log('levelup.end', level)
                 // this.expBar.setValueText(level);
-                expBar.nameText = 'LEVEL '+level;
+                expBar.nameText = 'LEVEL ' + level;
             })
             .on('levelup.complete', function () {
                 console.log('levelup.complete')
@@ -149,7 +169,9 @@ class Scene extends Phaser.Scene {
         }
 
         this.enemies.children.each(function (enemy) {
-            this.physics.moveTo(enemy, player.get().x, player.get().y, player.get().speed / 2);
+            this.physics.moveTo(enemy, player.get().x, player.get().y, player.get().speed / 3);
+            enemy.bar.x = enemy.x;
+            enemy.bar.y = enemy.y;
         }, this);
 
         if (this.enemies.getTotalUsed() === 0) {
@@ -168,6 +190,8 @@ class Scene extends Phaser.Scene {
     damagePlayer(player, enemy) {
 
         player.currentHealth -= enemy.damage;
+        enemy.health = 0;
+        enemy.bar.update();
         enemy.disableBody(true, true);
 
         const overlay = this.add.graphics();
@@ -203,6 +227,7 @@ class Scene extends Phaser.Scene {
         });
 
         enemy.health -= bullet.damage;
+        enemy.bar.update();
         if (enemy.health <= 0) {
             enemy.disableBody(true, true);
             player.get().experience += enemy.experience;
@@ -212,7 +237,7 @@ class Scene extends Phaser.Scene {
         bullet.hit = true;
 
         this.showDamage(bullet.damage, enemy, "#ffffff");
-        console.log('damageEnemy');
+        // console.log('damageEnemy');
         // console.log('enemy health: ' + enemy.health);
         // console.log('bullet.damage: ' + bullet.damage);
     }

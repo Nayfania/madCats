@@ -5,9 +5,9 @@ class Spawn {
     wave;
     spawnNumber = 0;
     spawns = [
-        {name: 'rat', quantity: 10, health: 1, damage: 1, experience: 1},
-        {name: 'rat2', quantity: 20, health: 5, damage: 5, experience: 2},
-        {name: 'waran', quantity: 20, health: 10, damage: 5, experience: 2},
+        {name: 'rat', quantity: 20, health: 10, damage: 1, experience: 1},
+        {name: 'rat2', quantity: 20, health: 50, damage: 5, experience: 2},
+        // {name: 'waran', quantity: 20, health: 10, damage: 5, experience: 2},
     ];
 
     constructor(scene, player) {
@@ -25,12 +25,15 @@ class Spawn {
         const minY = this.player.get().y - (this.scene.sys.game.config.height / 2);
 
         this.enemies = this.scene.physics.add.group();
-        for (let i = 0; i <= spawn.quantity; i++) {
+        for (let i = 0; i < spawn.quantity; i++) {
             const enemy = this.scene.physics.add.image(0, 0, spawn.name);
             enemy.setRandomPosition(minX, minY);
+            enemy.fullHealth = spawn.health;
             enemy.health = spawn.health;
             enemy.damage = spawn.damage;
             enemy.experience = spawn.experience;
+            enemy.getHealthPercentage = function () { return (this.health / this.fullHealth) * 100; };
+            enemy.bar = new HealthBar(this.scene, enemy);
             this.enemies.add(enemy);
         }
 
