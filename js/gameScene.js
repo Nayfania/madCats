@@ -1,6 +1,5 @@
-let player = new Player();
-
 class Scene extends Phaser.Scene {
+    player;
     enemies;
     lastFired = 0;
     timeline;
@@ -26,11 +25,17 @@ class Scene extends Phaser.Scene {
         this.plugins.get('rexscripttagloaderplugin').addToScene(this);
 
         this.load.rexScriptTag('js/health-bar-plugin/HealthBar.js');
+        this.load.rexScriptTag('js/FloatingNumbersPlugin.js');
+        this.load.rexScriptTag('js/bullet.js');
+        this.load.rexScriptTag('js/player.js');
+        this.load.rexScriptTag('js/background.js');
+        this.load.rexScriptTag('js/spawn.js');
 
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
 
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.spritesheet('player2', 'img/cat2.png', {frameWidth: 117, frameHeight: 147});
+        this.load.spritesheet('player_run', 'img/cat_run.png', {frameWidth: 117, frameHeight: 147});
 
         this.load.image('bg', 'img/background.jpeg');
         this.load.image('rat', 'img/rat.png');
@@ -54,15 +59,16 @@ class Scene extends Phaser.Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        player.setScene(this.scene);
-        player.create();
+        this.player = new Player();
+        this.player.setScene(this.scene);
+        this.player.create();
 
-        this.spawn = new Spawn(this.scene, player);
+        this.spawn = new Spawn(this.scene, this.player);
         this.enemies = this.spawn.next();
-        // this.physics.add.collider(player.get(), this.enemies);
-        this.physics.add.overlap(player.get(), this.enemies, this.damagePlayer, null, this);
+        // this.physics.add.collider(this.player.get(), this.enemies);
+        this.physics.add.overlap(this.player.get(), this.enemies, this.damagePlayer, null, this);
 
-        this.score = this.add.text(16, 16, 'Health: ' + player.get().currentHealth, {
+        this.score = this.add.text(16, 16, 'Health: ' + this.player.get().currentHealth, {
             fontSize: '32px',
             fill: '#cb1414'
         });
@@ -70,7 +76,7 @@ class Scene extends Phaser.Scene {
         this.score.setShadow(2, 2);
 
         this.cameras.main.setSize(this.scale.width, this.scale.height);
-        this.cameras.main.startFollow(player.get(), true, 0.05, 0.05);
+        this.cameras.main.startFollow(this.player.get(), true, 0.05, 0.05);
         // this.cameras.main.postFX.addVignette(0.5, 0.5, 0.7, 0.3);
 
         this.bullets = this.physics.add.group({classType: Bullet, maxSize: 100, runChildUpdate: true});
@@ -143,33 +149,32 @@ class Scene extends Phaser.Scene {
     }
 
     update(time, delta) {
-        player.get().setVelocity(0);
+        this.player.get().setVelocity(0);
 
-        if (player.get().currentHealth <= 0) {
+        if (this.player.get().currentHealth <= 0) {
             this.gameOver();
             return;
         }
 
-        player.playerMovement();
+        this.player.playerMovement();
 
         if (this.input.activePointer.isDown) {
             const bullet = this.bullets.get();
-            // console.log(time, this.lastFired);
-            if (bullet && time > (this.lastFired + 300)) {
+            if (bullet && time > (this.lastFired + 500)) {
                 this.lastFired = time;
                 bullet.hit = false;
-                bullet.setPosition(player.get().x - 50, player.get().y - 5);
+                bullet.setPosition(this.player.get().x - 50, this.player.get().y - 5);
                 bullet.setActive(true);
                 bullet.setVisible(true);
-                bullet.damage = player.get().damage;
+                bullet.damage = this.player.get().damage;
                 const worldPoint = this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y);
-                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, player.get().speed * 5);
-                bullet.rotation = Math.atan2(player.get().y - worldPoint.y, player.get().x - worldPoint.x);
+                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, this.player.get().speed * 3);
+                bullet.rotation = Math.atan2(this.player.get().y - worldPoint.y, this.player.get().x - worldPoint.x);
             }
         }
 
         this.enemies.children.each(function (enemy) {
-            this.physics.moveTo(enemy, player.get().x, player.get().y, player.get().speed / 3);
+            this.physics.moveTo(enemy, this.player.get().x, this.player.get().y, this.player.get().speed / 3);
             enemy.bar.x = enemy.x;
             enemy.bar.y = enemy.y;
         }, this);
@@ -177,7 +182,7 @@ class Scene extends Phaser.Scene {
         if (this.enemies.getTotalUsed() === 0) {
             if (this.spawn.hasNext()) {
                 this.enemies = this.spawn.next();
-                this.physics.add.overlap(player.get(), this.enemies, this.damagePlayer, null, this);
+                this.physics.add.overlap(this.player.get(), this.enemies, this.damagePlayer, null, this);
                 this.physics.add.overlap(this.bullets, this.enemies, this.damageEnemy, null, this);
             } else {
                 this.win();
@@ -230,9 +235,9 @@ class Scene extends Phaser.Scene {
         enemy.bar.update();
         if (enemy.health <= 0) {
             enemy.disableBody(true, true);
-            player.get().experience += enemy.experience;
+            this.player.get().experience += enemy.experience;
             this.expBar.gainExp(enemy.experience);
-            console.log('experience: ' + player.get().experience);
+            console.log('experience: ' + this.player.get().experience);
         }
         bullet.hit = true;
 
@@ -276,10 +281,23 @@ class Scene extends Phaser.Scene {
         this.physics.pause();
         game.scene.pause('GameScene');
 
-        var gameOver = this.add.text(player.get().x - 500, player.get().y - 100, 'YOU DIED', {
+        var gameOver = this.add.text(this.player.get().x - 500, this.player.get().y - 100, 'YOU DIED', {
             fontSize: '210px',
             fill: '#cb1414'
         });
         gameOver.setShadow(3, 3);
+        console.log('gameOver');
+    }
+
+    win() {
+        this.physics.pause();
+        game.scene.pause('GameScene');
+
+        var win = this.add.text(this.player.get().x - 500, this.player.get().y - 100, 'YOU WIN', {
+            fontSize: '210px',
+            fill: '#37ef0d'
+        });
+        win.setShadow(3, 3);
+        console.log('win');
     }
 }

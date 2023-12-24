@@ -8,4 +8,3 @@ var game = new Phaser.Game({
     },
     scene: [Scene, Menu]
 });
-// game.scene.getScene('Demo').setVisible(false);
