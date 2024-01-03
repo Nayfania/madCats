@@ -5,9 +5,9 @@ class Spawn {
     wave;
     spawnNumber = 0;
     spawns = [
-        {name: 'rat', quantity: 20, health: 10, damage: 1, experience: 1},
-        {name: 'rat2', quantity: 20, health: 50, damage: 5, experience: 2},
-        // {name: 'waran', quantity: 20, health: 10, damage: 5, experience: 2},
+        {name: 'rat', quantity: 5, health: 1, damage: 1, experience: 1},
+        {name: 'rat2', quantity: 5, health: 1, damage: 5, experience: 2},
+        {name: 'rat3', quantity: 5, health: 1, damage: 5, experience: 2},
     ];
 
     constructor(scene, player) {

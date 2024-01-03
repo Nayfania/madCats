@@ -6,5 +6,6 @@ var game = new Phaser.Game({
     physics: {
         default: 'arcade',
     },
+    transparent: true,
     scene: [Scene, Menu]
 });

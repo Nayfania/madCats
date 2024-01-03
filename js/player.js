@@ -3,6 +3,17 @@ class Player {
     player;
     isRunning = false;
 
+    static level = 1;
+    static points = 0;
+
+    static strength = 1;
+    static agility = 1;
+    static vitality = 1;
+
+    static damage = function () {
+        return Player.strength * 2;
+    };
+
     setScene(scene) {
         this.scene = scene.scene;
     }
@@ -15,11 +26,11 @@ class Player {
         });
         this.scene.anims.create({
             key: 'run',
-            frames: this.scene.anims.generateFrameNumbers('player_run', { frames: [ 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0 ], end: 0 }),
+            frames: this.scene.anims.generateFrameNumbers('player_run2', { frames: [ 0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0 ], end: 0 }),
             frameRate: 16,
         });
 
-        this.player = this.scene.physics.add.sprite(1280, 1300);
+        this.player = this.scene.physics.add.sprite(this.scene.sys.game.canvas.width / 2, this.scene.sys.game.canvas.height / 2);
         this.player.preFX.addGlow();
 
         this.player.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {

@@ -36,11 +36,12 @@ class Scene extends Phaser.Scene {
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.spritesheet('player2', 'img/cat2.png', {frameWidth: 117, frameHeight: 147});
         this.load.spritesheet('player_run', 'img/cat_run.png', {frameWidth: 117, frameHeight: 147});
+        this.load.spritesheet('player_run2', 'img/cat_run2.png', {frameWidth: 117, frameHeight: 147});
 
         this.load.image('bg', 'img/background.jpeg');
         this.load.image('rat', 'img/rat.png');
         this.load.image('rat2', 'img/rat2.png');
-        this.load.image('waran', 'img/waran.png');
+        this.load.image('rat3', 'img/rat3.png');
         this.load.image('bullet', 'img/arrow.png');
         this.load.image('heart', 'img/heart.png');
     }
@@ -130,7 +131,7 @@ class Scene extends Phaser.Scene {
             easeDuration: 2000
         });
         this.expBar = expBar;
-        this.expBar.setLevel(1);
+        this.expBar.setLevel(Player.level);
         this.expBar.setScrollFactor(0, 0);
         this.expBar.setPosition(1000, 50)
             .layout()
@@ -143,8 +144,12 @@ class Scene extends Phaser.Scene {
                 // this.expBar.setValueText(level);
                 expBar.nameText = 'LEVEL ' + level;
             })
-            .on('levelup.complete', function () {
-                console.log('levelup.complete')
+            .on('levelup.complete', function (level) {
+                console.log('levelup.complete', level)
+                if (Player.level !== level) {
+                    Player.level++;
+                    Player.points++;
+                }
             });
     }
 
@@ -160,7 +165,7 @@ class Scene extends Phaser.Scene {
 
         if (this.input.activePointer.isDown) {
             const bullet = this.bullets.get();
-            if (bullet && time > (this.lastFired + 500)) {
+            if (bullet && time > (this.lastFired + 700)) {
                 this.lastFired = time;
                 bullet.hit = false;
                 bullet.setPosition(this.player.get().x - 50, this.player.get().y - 5);
@@ -168,7 +173,7 @@ class Scene extends Phaser.Scene {
                 bullet.setVisible(true);
                 bullet.damage = this.player.get().damage;
                 const worldPoint = this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y);
-                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, this.player.get().speed * 3);
+                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, this.player.get().speed * 5);
                 bullet.rotation = Math.atan2(this.player.get().y - worldPoint.y, this.player.get().x - worldPoint.x);
             }
         }
@@ -231,7 +236,7 @@ class Scene extends Phaser.Scene {
             }
         });
 
-        enemy.health -= bullet.damage;
+        enemy.health -= Player.damage();
         enemy.bar.update();
         if (enemy.health <= 0) {
             enemy.disableBody(true, true);
@@ -241,7 +246,7 @@ class Scene extends Phaser.Scene {
         }
         bullet.hit = true;
 
-        this.showDamage(bullet.damage, enemy, "#ffffff");
+        this.showDamage(Player.damage(), enemy, "#ffffff");
         // console.log('damageEnemy');
         // console.log('enemy health: ' + enemy.health);
         // console.log('bullet.damage: ' + bullet.damage);
