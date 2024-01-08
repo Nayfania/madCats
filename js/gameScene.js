@@ -165,7 +165,7 @@ class Scene extends Phaser.Scene {
 
         if (this.input.activePointer.isDown) {
             const bullet = this.bullets.get();
-            if (bullet && time > (this.lastFired + 700)) {
+            if (bullet && time > (this.lastFired + Player.attackSpeed())) {
                 this.lastFired = time;
                 bullet.hit = false;
                 bullet.setPosition(this.player.get().x - 50, this.player.get().y - 5);
@@ -173,13 +173,13 @@ class Scene extends Phaser.Scene {
                 bullet.setVisible(true);
                 bullet.damage = this.player.get().damage;
                 const worldPoint = this.cameras.main.getWorldPoint(this.input.activePointer.x, this.input.activePointer.y);
-                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, this.player.get().speed * 5);
+                this.physics.moveTo(bullet, worldPoint.x, worldPoint.y, Player.baseSpeed * 5);
                 bullet.rotation = Math.atan2(this.player.get().y - worldPoint.y, this.player.get().x - worldPoint.x);
             }
         }
 
         this.enemies.children.each(function (enemy) {
-            this.physics.moveTo(enemy, this.player.get().x, this.player.get().y, this.player.get().speed / 3);
+            this.physics.moveTo(enemy, this.player.get().x, this.player.get().y, Player.baseSpeed / 3);
             enemy.bar.x = enemy.x;
             enemy.bar.y = enemy.y;
         }, this);

@@ -1,4 +1,9 @@
 class Menu extends Phaser.Scene {
+
+    cat;
+
+    points;
+
     constructor() {
         super({key: 'MenuScene'});
     }
@@ -6,6 +11,8 @@ class Menu extends Phaser.Scene {
     preload() {
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.image('damage', 'img/damage.png');
+        this.load.image('agility', 'img/agility.png');
+        this.load.image('vitality', 'img/vitality.png');
         this.load.spritesheet('paw', 'img/paw.png', {frameWidth: 50, frameHeight: 64});
     }
 
@@ -14,9 +21,9 @@ class Menu extends Phaser.Scene {
         this.switchScene();
         this.addCat();
         this.addStrength();
+        this.addAgility();
+        this.addVitality();
 
-        this.agility = this.add.text(470, 350, 'Agility:' + Player.agility, {fontSize: '60px', fill: '#cb1414'});
-        this.vitality = this.add.text(470, 420, 'Vitality:' + Player.vitality, {fontSize: '60px', fill: '#cb1414'});
         this.points = this.add.text(470, 500, 'Points:' + Player.points, {fontSize: '60px', fill: '#cb1414'});
     }
 
@@ -49,12 +56,12 @@ class Menu extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('player', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
             frameRate: 8,
         });
-        this.player = this.physics.add.sprite(this.sys.game.canvas.width / 2, this.sys.game.canvas.height / 2);
-        this.player.preFX.addGlow();
-        this.player.play('menuPlayer');
+        this.cat = this.physics.add.sprite(this.sys.game.canvas.width / 2, this.sys.game.canvas.height / 2);
+        this.cat.preFX.addGlow();
+        this.cat.play('menuPlayer');
         this.time.addEvent({
             callback: function () {
-                this.player.play('menuPlayer');
+                this.cat.play('menuPlayer');
             },
             callbackScope: this,
             delay: 5000, // 1000 = 1 second
@@ -65,22 +72,52 @@ class Menu extends Phaser.Scene {
     addStrength() {
         this.add.image(500, 300, 'damage');
         const strength = this.add.text(550, 270, Player.strength, {fontSize: '60px', fill: '#cb1414'});
-        const strengthAdd = this.add.image(650, 300, 'paw', 0).setInteractive();
-        const strengthAdd2 = this.add.image(650, 300, 'paw', 1).setInteractive();
-        strengthAdd2.visible=false;
-        strengthAdd.on('pointerdown', function () {
-            strengthAdd.visible = false;
-            strengthAdd2.visible = true;
+
+        this.addPaw(650, 300, function () {
+            Player.strength++;
+            strength.text = Player.strength;
+        });
+    }
+
+    addAgility() {
+        this.add.image(500, 370, 'agility');
+        const agility = this.add.text(550, 340, Player.agility, {fontSize: '60px', fill: '#cb1414'});
+
+        this.addPaw(650, 370, function () {
+            Player.agility++;
+            agility.text = Player.agility;
+        });
+    }
+
+    addVitality() {
+        this.add.image(500, 440, 'vitality');
+        const vitality = this.add.text(550, 410, Player.vitality, {fontSize: '60px', fill: '#cb1414'});
+
+        this.addPaw(650, 440, function () {
+            Player.vitality++;
+            vitality.text = Player.vitality;
+        });
+    }
+
+    addPaw(x, y, func) {
+        const paw = this.add.image(x, y, 'paw', 0).setInteractive();
+        const paw2 = this.add.image(x, y, 'paw', 1).setInteractive();
+
+        paw2.visible=false;
+
+        paw.on('pointerdown', function () {
+            paw.visible = false;
+            paw2.visible = true;
             if (Player.points > 0) {
-                Player.strength++;
-                strength.text = Player.strength + ' +';
+                func();
                 Player.points--;
                 this.updatePoints();
             }
         }, this);
-        strengthAdd2.on('pointerup', function () {
-            strengthAdd.visible = true;
-            strengthAdd2.visible = false;
+
+        paw2.on('pointerup', function () {
+            paw.visible = true;
+            paw2.visible = false;
         });
     }
 }
