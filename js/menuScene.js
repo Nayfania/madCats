@@ -1,8 +1,9 @@
 class Menu extends Phaser.Scene {
 
     cat;
-
     points;
+    health;
+    paws = [];
 
     constructor() {
         super({key: 'MenuScene'});
@@ -11,8 +12,10 @@ class Menu extends Phaser.Scene {
     preload() {
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.image('damage', 'img/damage.png');
+        this.load.image('health', 'img/health.png');
         this.load.image('agility', 'img/agility.png');
         this.load.image('vitality', 'img/vitality.png');
+        this.load.image('dexterity', 'img/dexterity.png');
         this.load.spritesheet('paw', 'img/paw.png', {frameWidth: 50, frameHeight: 64});
     }
 
@@ -20,11 +23,25 @@ class Menu extends Phaser.Scene {
         console.log(this.scene.key)
         this.switchScene();
         this.addCat();
+
+        this.add.text(750, 100, 'MAD =^.^= CAT', {fontSize: '60px', fill: '#70f6e6'})
+            .setStroke(0x777777, 1);
+
+        var test = this.add.graphics();
+        test.lineStyle(2, 0x777777, 0.2);
+        test.lineBetween(470, 235, 676, 235).setDepth(100);
+        test.lineBetween(470, 335, 676, 335).setDepth(100);
+        test.lineBetween(470, 405, 676, 405).setDepth(100);
+        test.lineBetween(470, 475, 676, 475).setDepth(100);
+
+        this.addHealth();
         this.addStrength();
         this.addAgility();
         this.addVitality();
+        this.addDexterity();
 
-        this.points = this.add.text(470, 500, 'Points:' + Player.points, {fontSize: '60px', fill: '#cb1414'});
+        this.points = this.add.text(470, 600, 'Points:' + Player.points, {fontSize: '40px', fill: '#cb1414'});
+        this.updatePaws();
     }
 
     updatePoints() {
@@ -45,8 +62,9 @@ class Menu extends Phaser.Scene {
 
         this.events.on('wake', () => {
             console.log('MenuScene wake');
-
             this.updatePoints();
+            this.updatePaws();
+            this.health.text = Player.currentHealth;
         });
     }
 
@@ -56,7 +74,7 @@ class Menu extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('player', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
             frameRate: 8,
         });
-        this.cat = this.physics.add.sprite(this.sys.game.canvas.width / 2, this.sys.game.canvas.height / 2);
+        this.cat = this.physics.add.sprite(this.sys.game.canvas.width / 2, this.sys.game.canvas.height / 2 - 50);
         this.cat.preFX.addGlow();
         this.cat.play('menuPlayer');
         this.time.addEvent({
@@ -69,9 +87,14 @@ class Menu extends Phaser.Scene {
         });
     }
 
+    addHealth() {
+        this.add.image(500, 200, 'health');
+        this.health = this.add.text(550, 173, Player.currentHealth, {fontSize: '60px', fill: '#cb1414'});
+    }
+
     addStrength() {
         this.add.image(500, 300, 'damage');
-        const strength = this.add.text(550, 270, Player.strength, {fontSize: '60px', fill: '#cb1414'});
+        const strength = this.add.text(550, 280, Player.strength, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 300, function () {
             Player.strength++;
@@ -81,7 +104,7 @@ class Menu extends Phaser.Scene {
 
     addAgility() {
         this.add.image(500, 370, 'agility');
-        const agility = this.add.text(550, 340, Player.agility, {fontSize: '60px', fill: '#cb1414'});
+        const agility = this.add.text(550, 350, Player.agility, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 370, function () {
             Player.agility++;
@@ -91,7 +114,7 @@ class Menu extends Phaser.Scene {
 
     addVitality() {
         this.add.image(500, 440, 'vitality');
-        const vitality = this.add.text(550, 410, Player.vitality, {fontSize: '60px', fill: '#cb1414'});
+        const vitality = this.add.text(550, 420, Player.vitality, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 440, function () {
             Player.vitality++;
@@ -99,11 +122,21 @@ class Menu extends Phaser.Scene {
         });
     }
 
+    addDexterity() {
+        this.add.image(500, 510, 'dexterity');
+        const dexterity = this.add.text(550, 490, Player.dexterity, {fontSize: '50px', fill: '#cb1414'});
+
+        this.addPaw(650, 510, function () {
+            Player.dexterity++;
+            dexterity.text = Player.dexterity;
+        });
+    }
+
     addPaw(x, y, func) {
         const paw = this.add.image(x, y, 'paw', 0).setInteractive();
         const paw2 = this.add.image(x, y, 'paw', 1).setInteractive();
 
-        paw2.visible=false;
+        paw2.visible = false;
 
         paw.on('pointerdown', function () {
             paw.visible = false;
@@ -112,12 +145,23 @@ class Menu extends Phaser.Scene {
                 func();
                 Player.points--;
                 this.updatePoints();
+                this.updatePaws();
             }
         }, this);
 
         paw2.on('pointerup', function () {
-            paw.visible = true;
+            if (Player.points > 0) {
+                paw.visible = true;
+            }
             paw2.visible = false;
+        });
+
+        this.paws.push(paw);
+    }
+
+    updatePaws() {
+        this.paws.forEach(function (paw) {
+            paw.visible = Player.points > 0;
         });
     }
 }

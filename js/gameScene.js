@@ -69,7 +69,7 @@ class Scene extends Phaser.Scene {
         // this.physics.add.collider(this.player.get(), this.enemies);
         this.physics.add.overlap(this.player.get(), this.enemies, this.damagePlayer, null, this);
 
-        this.score = this.add.text(16, 16, 'Health: ' + this.player.get().currentHealth, {
+        this.score = this.add.text(16, 16, 'Health: ' + Player.currentHealth, {
             fontSize: '32px',
             fill: '#cb1414'
         });
@@ -113,9 +113,9 @@ class Scene extends Phaser.Scene {
             },
             bar: {
                 height: 10,
-                barColor: 0x7b5e57,
+                barColor: 0xa57829,
                 trackColor: 0x260e04,
-                // trackStrokeColor: COLOR_LIGHT
+                trackStrokeColor: 0x000000
             },
             align: {},
             space: {
@@ -124,7 +124,7 @@ class Scene extends Phaser.Scene {
                 bar: 10
             },
             levelCounter: {
-                table: [0, 0, 10, 20, 30, 100],
+                table: [0, 0, 3, 20, 30, 100],
                 maxLevel: 10,
                 exp: 0,
             },
@@ -156,7 +156,7 @@ class Scene extends Phaser.Scene {
     update(time, delta) {
         this.player.get().setVelocity(0);
 
-        if (this.player.get().currentHealth <= 0) {
+        if (Player.currentHealth <= 0) {
             this.gameOver();
             return;
         }
@@ -199,14 +199,14 @@ class Scene extends Phaser.Scene {
 
     damagePlayer(player, enemy) {
 
-        player.currentHealth -= enemy.damage;
+        Player.currentHealth -= enemy.damage;
         enemy.health = 0;
         enemy.bar.update();
         enemy.disableBody(true, true);
 
         const overlay = this.add.graphics();
-        var empty = (player.health - player.currentHealth) * (this.heart.height / player.health);
-        var damage = (this.heart.height / player.health) * player.damage;
+        var empty = (Player.health - Player.currentHealth) * (this.heart.height / Player.health);
+        var damage = (this.heart.height / Player.health) * player.damage;
         overlay.fillStyle(0x000000).fillRect(0, 0, 250, empty + damage + 42);
         overlay.setMask(this.heart.mask);
         overlay.setScrollFactor(0, 0);
@@ -221,10 +221,9 @@ class Scene extends Phaser.Scene {
         this.cameras.main.shake(50, 0.005, true);
         this.showDamage(enemy.damage, player, "#ff0000");
 
-        this.score.text = 'Health: ' + player.currentHealth;
+        this.score.text = 'Health: ' + Player.currentHealth;
 
         console.log('damagePlayer');
-        // console.log('player.currentHealth: ' + player.currentHealth);
     }
 
     damageEnemy(bullet, enemy) {

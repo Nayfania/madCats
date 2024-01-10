@@ -6,10 +6,13 @@ class Player {
     static level = 1;
     static points = 0;
 
-    static strength = 1; // Damage
-    static agility = 1; // Speed
-    static vitality = 1; // Health
-    static dexterity = 1; // Attack Speed
+    static health = 100;
+    static currentHealth = 100;
+
+    static strength = 10; // Damage
+    static agility = 10; // Speed
+    static vitality = 10; // Health
+    static dexterity = 10; // Attack Speed
 
     static baseSpeed = Phaser.Math.GetSpeed(300, 1) * 700;
     static baseAttackSpeed = 1000; // ms
@@ -33,12 +36,12 @@ class Player {
     create() {
         this.scene.anims.create({
             key: 'idle',
-            frames: this.scene.anims.generateFrameNumbers('player2', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
+            frames: this.scene.anims.generateFrameNumbers('player', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
             frameRate: 8,
         });
         this.scene.anims.create({
             key: 'run',
-            frames: this.scene.anims.generateFrameNumbers('player_run2', {
+            frames: this.scene.anims.generateFrameNumbers('player_run', {
                 frames: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0],
                 end: 0
             }),
@@ -64,8 +67,6 @@ class Player {
 
         // this.player = this.scene.physics.add.image(1280, 1024, 'cat');
         this.player.setCollideWorldBounds(true);
-        this.player.health = 100;
-        this.player.currentHealth = 100;
         this.player.damage = 2;
         this.player.experience = 0;
     }
@@ -81,6 +82,30 @@ class Player {
             this.isRunning = true;
             this.player.play('run');
         }
+    }
+
+    animateLvlUp() {
+        this.player.visible = false;
+        this.player.body.setEnable(false);
+
+        let lvlup = this.scene.add.image(this.player.x, this.player.y, 'lvlup');
+
+        this.scene.tweens.add({
+            targets: [lvlup],
+            duration: 200,
+            y: {from:this.player.y, to:this.player.y - 25},
+            ease: 'Linear',
+            yoyo: true,
+            repeat: 2,
+            onStart: _ => console.log('Tween is onStart!'),
+            onActive: _ => console.log('Tween is onActive!'),
+            onComplete: function () {
+                lvlup.visible = false;
+                lvlup.destroy();
+                this.player.visible = true;
+                this.player.body.setEnable(true);
+            }.bind(this)
+        });
     }
 
     get() {
