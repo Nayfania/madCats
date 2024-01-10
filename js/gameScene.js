@@ -44,6 +44,7 @@ class Scene extends Phaser.Scene {
         this.load.image('rat3', 'img/rat3.png');
         this.load.image('bullet', 'img/arrow.png');
         this.load.image('heart', 'img/heart.png');
+        this.load.image('lvlup', 'img/lvlup.png');
     }
 
     create() {
@@ -149,8 +150,10 @@ class Scene extends Phaser.Scene {
                 if (Player.level !== level) {
                     Player.level++;
                     Player.points++;
+
+                    this.player.animateLvlUp();
                 }
-            });
+            }, this);
     }
 
     update(time, delta) {
