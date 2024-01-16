@@ -14,7 +14,7 @@ class Player {
     static vitality = 10; // Health
     static dexterity = 10; // Attack Speed
 
-    static baseSpeed = Phaser.Math.GetSpeed(300, 1) * 700;
+    static baseSpeed = Phaser.Math.GetSpeed(1000, 1) * 50;
     static baseAttackSpeed = 1000; // ms
 
     static damage = function () {

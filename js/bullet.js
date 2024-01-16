@@ -1,5 +1,7 @@
 class Bullet extends Phaser.GameObjects.Image {
     hit = false;
+    static speed = Phaser.Math.GetSpeed(1000000, 1);
+
     constructor(scene) {
         super(scene, 0, 0, 'bullet');
     }
