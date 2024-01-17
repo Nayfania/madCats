@@ -32,13 +32,9 @@ class Spawn {
 
     next() {
         const spawn = this.spawns[this.spawnNumber];
-        const minX = this.player.get().x - (this.scene.sys.game.config.width / 2);
-        const minY = this.player.get().y - (this.scene.sys.game.config.height / 2);
-
         for (let i = 0; i < spawn.pack && spawn.quantity > 0; i++) {
             spawn.quantity--;
-            const enemy = this.scene.physics.add.image(0, 0, spawn.name);
-            enemy.setRandomPosition(minX, minY);
+            const enemy = this.scene.physics.add.image(this.getRandomX(), this.getRandomY(), spawn.name);
             enemy.fullHealth = spawn.health;
             enemy.health = spawn.health;
             enemy.damage = spawn.damage;
@@ -66,5 +62,27 @@ class Spawn {
 
     enemiesCount() {
         this.enemiesText.text = 'Enemies: ' + this.enemies.getTotalUsed();
+    }
+
+    getRandomX() {
+        const minX = this.player.get().x - (this.scene.sys.game.config.width / 2);
+        let x = minX + (Math.random() * this.scene.sys.scale.width);
+
+        if (this.player.get().x <= x - 200 || this.player.get().x >= x + 200) {
+            return x;
+        }
+
+        return this.getRandomX();
+    }
+
+    getRandomY() {
+        const minY = this.player.get().y - (this.scene.sys.game.config.height / 2);
+        let y = minY + (Math.random() * this.scene.sys.scale.height);
+
+        if (this.player.get().y <= y - 200 || this.player.get().y >= y + 200) {
+            return y;
+        }
+
+        return this.getRandomY();
     }
 }
