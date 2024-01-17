@@ -3,13 +3,17 @@ class Spawn {
     player;
     enemies;
     wave;
+
     spawnNumber = 0;
     spawns = [
-        {name: 'rat', quantity: 20, pack: 13, health: 1, damage: 1, experience: 1},
-        {name: 'rat2', quantity: 15, pack: 5, health: 1, damage: 5, experience: 2},
-        {name: 'rat3', quantity: 25, pack: 10, health: 1, damage: 5, experience: 2},
+        {name: 'rat', quantity: 50, pack: 10, health: 8, damage: 5, experience: 1},
+        {name: 'rat2', quantity: 100, pack: 10, health: 30, damage: 7, experience: 2},
+        {name: 'rat3', quantity: 150, pack: 20, health: 50, damage: 10, experience: 3},
     ];
+
     static speed = Phaser.Math.GetSpeed(10000, 1) * 6;
+
+    movable = true;
 
     constructor(scene, player) {
         this.scene = scene.scene;

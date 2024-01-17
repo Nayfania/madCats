@@ -5,16 +5,17 @@ class Player {
 
     static level = 1;
     static points = 0;
+    static pointsPerLVLUp = 1;
 
     static health = 100;
     static currentHealth = 100;
 
-    static strength = 10; // Damage
+    static strength = 1; // Damage
     static agility = 10; // Speed
     static vitality = 10; // Health
     static dexterity = 10; // Attack Speed
 
-    static baseSpeed = Phaser.Math.GetSpeed(1000, 1) * 50;
+    static baseSpeed = Phaser.Math.GetSpeed(1000, 1) * 10;
     static baseAttackSpeed = 1000; // ms
 
     static damage = function () {

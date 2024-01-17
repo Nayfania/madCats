@@ -119,7 +119,7 @@ class Scene extends Phaser.Scene {
                 bar: 10
             },
             levelCounter: {
-                table: [0, 0, 3, 20, 30, 100],
+                table: [0, 0, 5, 10, 20, 30, 40, 50, 70, 90, 100],
                 maxLevel: 10,
                 exp: 0,
             },
@@ -131,21 +131,23 @@ class Scene extends Phaser.Scene {
         this.expBar.setPosition(1000, 50)
             .layout()
             .on('levelup.start', function (level, val) {
-                console.log('levelup.start', level)
+                // console.log('levelup.start', level)
                 // expBar.nameText = 'LEVEL '+level;
             })
             .on('levelup.end', function (level) {
-                console.log('levelup.end', level)
+                // console.log('levelup.end', level)
                 // this.expBar.setValueText(level);
                 expBar.nameText = 'LEVEL ' + level;
             })
             .on('levelup.complete', function (level) {
-                console.log('levelup.complete', level)
+                // console.log('levelup.complete', level)
                 if (Player.level !== level) {
                     Player.level++;
-                    Player.points++;
+                    Player.points += Player.pointsPerLVLUp;
 
                     this.player.animateLvlUp();
+
+                    game.scene.switch('GameScene', 'MenuScene');
                 }
             }, this);
 
@@ -155,7 +157,7 @@ class Scene extends Phaser.Scene {
         this.physics.add.overlap(this.bullets, spawnEnemies, this.damageEnemy, null, this);
         this.enemies = spawnEnemies;
         this.timer = this.time.addEvent({
-            delay: 5000,
+            delay: 10000,
             callbackScope: this,
             loop: true,
             callback: function () {
@@ -197,15 +199,15 @@ class Scene extends Phaser.Scene {
         }
 
         this.enemies.children.each(function (enemy) {
-            this.physics.moveTo(enemy, this.player.get().x, this.player.get().y, Spawn.speed);
+            if (this.spawn.movable) {
+                this.physics.moveTo(enemy, this.player.get().x, this.player.get().y, Spawn.speed);
+            }
             enemy.bar.x = enemy.x;
             enemy.bar.y = enemy.y;
         }, this);
 
-        if (this.enemies.getTotalUsed() === 0) {
-            if (!this.spawn.hasNext()) {
-                this.win();
-            }
+        if (this.enemies.getTotalUsed() === 0 && !this.spawn.hasNext()) {
+            this.win();
         }
         // console.log('this.enemies: ' + this.enemies.getTotalUsed());
         // console.log('time: ' + time + ' delta: ' + delta);
@@ -214,16 +216,27 @@ class Scene extends Phaser.Scene {
 
     damagePlayer(player, enemy) {
 
-        Player.currentHealth -= enemy.damage;
-        enemy.health = 0;
-        enemy.bar.update();
-        enemy.disableBody(true, true);
-        this.enemies.remove(enemy);
-        this.spawn.enemiesCount();
+        this.enemies.children.each(function (enemy) {
+            let x = enemy.x <= this.player.get().x ? enemy.x - 100 : enemy.x + 100;
+            let y = enemy.y <= this.player.get().y ? enemy.y - 100 : enemy.y + 100;
+
+            this.physics.moveTo(enemy, x, y, Spawn.speed * 5);
+        }, this);
+        this.time.addEvent({
+            delay: 500, callback: function (scene) {
+                scene.spawn.movable = true;
+            }, args: [this]
+        });
+
+        if (this.spawn.movable) {
+            Player.currentHealth -= enemy.damage;
+        }
+
+        this.spawn.movable = false;
 
         const overlay = this.add.graphics();
-        var empty = (Player.health - Player.currentHealth) * (this.heart.height / Player.health);
-        var damage = (this.heart.height / Player.health) * player.damage;
+        let empty = (Player.health - Player.currentHealth) * (this.heart.height / Player.health);
+        let damage = (this.heart.height / Player.health) * player.damage;
         overlay.fillStyle(0x000000).fillRect(0, 0, 250, empty + damage + 42);
         overlay.setMask(this.heart.mask);
         overlay.setScrollFactor(0, 0);
@@ -244,6 +257,13 @@ class Scene extends Phaser.Scene {
     }
 
     damageEnemy(bullet, enemy) {
+        console.log('damageEnemy');
+        console.log('enemy fullHealth: ' + enemy.fullHealth);
+        console.log('enemy health: ' + enemy.health);
+
+        if (bullet.hit) {
+            return;
+        }
 
         enemy.setTint(0xff0000);
         this.timeline.add({
@@ -265,9 +285,10 @@ class Scene extends Phaser.Scene {
         bullet.hit = true;
 
         this.showDamage(Player.damage(), enemy, "#ffffff");
-        // console.log('damageEnemy');
-        // console.log('enemy health: ' + enemy.health);
-        // console.log('bullet.damage: ' + bullet.damage);
+
+        console.log('enemy health: ' + enemy.health);
+        console.log('bullet.damage: ' + bullet.damage);
+        console.log('Player.damage: ' + Player.damage());
     }
 
     showDamage(text, object, color) {
