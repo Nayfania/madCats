@@ -30,6 +30,8 @@ class Scene extends Phaser.Scene {
         this.load.rexScriptTag('js/player.js');
         this.load.rexScriptTag('js/background.js');
         this.load.rexScriptTag('js/spawn.js');
+        this.load.rexScriptTag('js/skillManager.js');
+        this.load.rexScriptTag('js/heart.js');
 
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
 
@@ -55,22 +57,11 @@ class Scene extends Phaser.Scene {
 
         new Background(this.scene);
 
-        this.heart = this.add.image(0, 50, 'heart').setOrigin(0);
-        this.heart.setScrollFactor(0, 0);
-        this.heart.mask = this.heart.createBitmapMask();
-
-        this.cursors = this.input.keyboard.createCursorKeys();
+        this.addHeart();
 
         this.player = new Player();
         this.player.setScene(this.scene);
         this.player.create();
-
-        this.score = this.add.text(16, 16, 'Health: ' + Player.currentHealth, {
-            fontSize: '32px',
-            fill: '#cb1414'
-        });
-        this.score.setScrollFactor(0, 0);
-        this.score.setShadow(2, 2);
 
         this.cameras.main.setSize(this.scale.width, this.scale.height);
         this.cameras.main.startFollow(this.player.get(), true, 0.05, 0.05);
@@ -94,6 +85,7 @@ class Scene extends Phaser.Scene {
 
         this.events.on('wake', () => {
             console.log('GameScene wake');
+            this.heart.update();
         });
 
         var expBar = this.rexUI.add.expBar({
@@ -119,7 +111,7 @@ class Scene extends Phaser.Scene {
                 bar: 10
             },
             levelCounter: {
-                table: [0, 0, 5, 10, 20, 30, 40, 50, 70, 90, 100],
+                table: [0, 0, 1, 10, 20, 30, 40, 50, 70, 90, 100],
                 maxLevel: 10,
                 exp: 0,
             },
@@ -157,7 +149,7 @@ class Scene extends Phaser.Scene {
         this.physics.add.overlap(this.bullets, spawnEnemies, this.damageEnemy, null, this);
         this.enemies = spawnEnemies;
         this.timer = this.time.addEvent({
-            delay: 10000,
+            delay: 20000,
             callbackScope: this,
             loop: true,
             callback: function () {
@@ -171,6 +163,11 @@ class Scene extends Phaser.Scene {
                 this.enemies = spawnEnemies;
             }.bind(this)
         });
+    }
+
+    addHeart() {
+        this.heart = new Heart(this);
+        this.heart.addHeart();
     }
 
     update(time, delta) {
@@ -234,12 +231,7 @@ class Scene extends Phaser.Scene {
 
         this.spawn.movable = false;
 
-        const overlay = this.add.graphics();
-        let empty = (Player.health - Player.currentHealth) * (this.heart.height / Player.health);
-        let damage = (this.heart.height / Player.health) * player.damage;
-        overlay.fillStyle(0x000000).fillRect(0, 0, 250, empty + damage + 42);
-        overlay.setMask(this.heart.mask);
-        overlay.setScrollFactor(0, 0);
+        this.heart.update();
 
         player.setTint(0xff0000);
         this.timeline.add({
@@ -250,8 +242,6 @@ class Scene extends Phaser.Scene {
 
         this.cameras.main.shake(50, 0.005, true);
         this.showDamage(enemy.damage, player, "#ff0000");
-
-        this.score.text = 'Health: ' + Player.currentHealth;
 
         // console.log('damagePlayer');
     }

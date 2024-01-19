@@ -4,12 +4,15 @@ class Menu extends Phaser.Scene {
     points;
     health;
     paws = [];
+    skillManager;
 
     constructor() {
         super({key: 'MenuScene'});
     }
 
     preload() {
+        this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
+
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.image('damage', 'img/damage.png');
         this.load.image('health', 'img/health.png');
@@ -40,8 +43,10 @@ class Menu extends Phaser.Scene {
         this.addVitality();
         this.addDexterity();
 
-        this.points = this.add.text(470, 600, 'Points:' + Player.points, {fontSize: '40px', fill: '#cb1414'});
+        this.points = this.add.text(470, 600, 'Points:' + Player.points, {fontSize: '40px', fill: '#e3e3e3'});
         this.updatePaws();
+
+        this.addSkillPanel();
     }
 
     updatePoints() {
@@ -65,6 +70,7 @@ class Menu extends Phaser.Scene {
             this.updatePoints();
             this.updatePaws();
             this.health.text = Player.currentHealth;
+            this.skillManager.update();
         });
     }
 
@@ -163,5 +169,10 @@ class Menu extends Phaser.Scene {
         this.paws.forEach(function (paw) {
             paw.visible = Player.points > 0;
         });
+    }
+
+    addSkillPanel() {
+        this.skillManager = new SkillManager(this);
+        this.skillManager.addPanel();
     }
 }

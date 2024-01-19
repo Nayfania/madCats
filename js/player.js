@@ -10,16 +10,22 @@ class Player {
     static health = 100;
     static currentHealth = 100;
 
-    static strength = 1; // Damage
-    static agility = 10; // Speed
-    static vitality = 10; // Health
-    static dexterity = 10; // Attack Speed
+    static strength = 10; // Damage
+    static agility = 1; // Speed
+    static vitality = 1; // Health
+    static dexterity = 1; // Attack Speed
 
-    static baseSpeed = Phaser.Math.GetSpeed(1000, 1) * 10;
-    static baseAttackSpeed = 1000; // ms
+    static baseDamage = 1;
+    static baseSpeed = 100;
+    static baseAttackSpeed = 1500; // ms
 
-    static damage = function () {
-        return Player.strength * 2;
+    static addHealth(value) {
+        Player.health += value;
+        Player.currentHealth += value;
+    }
+
+    static damage() {
+        return Player.baseDamage + Player.strength * 2;
     };
 
     static speed = function () {
@@ -35,6 +41,7 @@ class Player {
     }
 
     create() {
+        this.cursors = this.scene.input.keyboard.createCursorKeys();
         this.scene.anims.create({
             key: 'idle',
             frames: this.scene.anims.generateFrameNumbers('player', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
@@ -94,7 +101,7 @@ class Player {
         this.scene.tweens.add({
             targets: [lvlup],
             duration: 200,
-            y: {from:this.player.y, to:this.player.y - 25},
+            y: {from: this.player.y, to: this.player.y - 25},
             ease: 'Linear',
             yoyo: true,
             repeat: 2,
@@ -114,26 +121,26 @@ class Player {
     }
 
     playerMovement() {
-        if (this.scene.cursors.left.isDown && !this.scene.cursors.up.isDown && !this.scene.cursors.down.isDown) { // Left
+        if (this.cursors.left.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Left
             this.player.setVelocityX(-Player.speed());
             this.player.flipX = false;
-        } else if (this.scene.cursors.right.isDown && !this.scene.cursors.up.isDown && !this.scene.cursors.down.isDown) { // Right
+        } else if (this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Right
             this.player.setVelocityX(Player.speed());
             this.player.flipX = true;
-        } else if (this.scene.cursors.up.isDown && !this.scene.cursors.right.isDown && !this.scene.cursors.left.isDown) { // Up
+        } else if (this.cursors.up.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Up
             this.player.setVelocityY(-Player.speed());
-        } else if (this.scene.cursors.down.isDown && !this.scene.cursors.right.isDown && !this.scene.cursors.left.isDown) { // Down
+        } else if (this.cursors.down.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Down
             this.player.setVelocityY(Player.speed());
-        } else if (this.scene.cursors.left.isDown && this.scene.cursors.down.isDown) { // Down and Left
+        } else if (this.cursors.left.isDown && this.cursors.down.isDown) { // Down and Left
             this.player.setVelocity(-Player.speed(), Player.speed());
             this.player.flipX = false;
-        } else if (this.scene.cursors.left.isDown && this.scene.cursors.up.isDown) { // Up and Left
+        } else if (this.cursors.left.isDown && this.cursors.up.isDown) { // Up and Left
             this.player.setVelocity(-Player.speed(), -Player.speed());
             this.player.flipX = false;
-        } else if (this.scene.cursors.right.isDown && this.scene.cursors.up.isDown) { // Up and Right
+        } else if (this.cursors.right.isDown && this.cursors.up.isDown) { // Up and Right
             this.player.setVelocity(Player.speed(), -Player.speed());
             this.player.flipX = true;
-        } else if (this.scene.cursors.right.isDown && this.scene.cursors.down.isDown) { // Down and Right
+        } else if (this.cursors.right.isDown && this.cursors.down.isDown) { // Down and Right
             this.player.setVelocity(Player.speed(), Player.speed());
             this.player.flipX = true;
         }
