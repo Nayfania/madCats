@@ -50,6 +50,7 @@ class Scene extends Phaser.Scene {
         this.load.image('bullet', 'img/arrow.png');
         this.load.image('heart', 'img/heart.png');
         this.load.image('lvlup', 'img/lvlup.png');
+        this.load.image('soul', 'img/soul.png');
     }
 
     create() {
@@ -250,9 +251,9 @@ class Scene extends Phaser.Scene {
     }
 
     damageEnemy(bullet, enemy) {
-        console.log('damageEnemy');
-        console.log('enemy fullHealth: ' + enemy.fullHealth);
-        console.log('enemy health: ' + enemy.health);
+        // console.log('damageEnemy');
+        // console.log('enemy fullHealth: ' + enemy.fullHealth);
+        // console.log('enemy health: ' + enemy.health);
 
         if (bullet.hit) {
             return;
@@ -260,7 +261,7 @@ class Scene extends Phaser.Scene {
 
         enemy.setTint(0xff0000);
         this.timeline.add({
-            in: 100, once: false, run: () => {
+            in: 100, run: () => {
                 enemy.setTint();
             }
         });
@@ -268,8 +269,17 @@ class Scene extends Phaser.Scene {
         enemy.health -= Player.damage();
         enemy.bar.update();
         if (enemy.health <= 0) {
-            enemy.disableBody(true, true);
+
             this.enemies.remove(enemy);
+
+            enemy.animateDie();
+
+            this.timeline.add({
+                in: 5000, once: false, run: () => {
+                    enemy.disableBody(true, true);
+                }
+            });
+
             this.spawn.enemiesCount();
             this.player.get().experience += enemy.experience;
             this.expBar.gainExp(enemy.experience);
@@ -279,9 +289,9 @@ class Scene extends Phaser.Scene {
 
         this.showDamage(Player.damage(), enemy, "#ffffff");
 
-        console.log('enemy health: ' + enemy.health);
-        console.log('bullet.damage: ' + bullet.damage);
-        console.log('Player.damage: ' + Player.damage());
+        // console.log('enemy health: ' + enemy.health);
+        // console.log('bullet.damage: ' + bullet.damage);
+        // console.log('Player.damage: ' + Player.damage());
     }
 
     showDamage(text, object, color) {

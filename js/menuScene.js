@@ -139,14 +139,14 @@ class Menu extends Phaser.Scene {
     }
 
     addPaw(x, y, func) {
-        const paw = this.add.image(x, y, 'paw', 0).setInteractive();
-        const paw2 = this.add.image(x, y, 'paw', 1).setInteractive();
+        const pawUp = this.add.image(x, y, 'paw', 0).setInteractive();
+        const pawDown = this.add.image(x, y, 'paw', 1).setInteractive();
 
-        paw2.visible = false;
+        pawDown.visible = false;
 
-        paw.on('pointerdown', function () {
-            paw.visible = false;
-            paw2.visible = true;
+        pawUp.on('pointerdown', function () {
+            pawUp.visible = false;
+            pawDown.visible = true;
             if (Player.points > 0) {
                 func();
                 Player.points--;
@@ -155,14 +155,14 @@ class Menu extends Phaser.Scene {
             }
         }, this);
 
-        paw2.on('pointerup', function () {
+        pawDown.on('pointerup', function () {
             if (Player.points > 0) {
-                paw.visible = true;
+                pawUp.visible = true;
             }
-            paw2.visible = false;
+            pawDown.visible = false;
         });
 
-        this.paws.push(paw);
+        this.paws.push(pawUp);
     }
 
     updatePaws() {

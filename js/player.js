@@ -10,7 +10,7 @@ class Player {
     static health = 100;
     static currentHealth = 100;
 
-    static strength = 10; // Damage
+    static strength = 1; // Damage
     static agility = 1; // Speed
     static vitality = 1; // Health
     static dexterity = 1; // Attack Speed

@@ -37,6 +37,7 @@ class Spawn {
         const spawn = this.spawns[this.spawnNumber];
         for (let i = 0; i < spawn.pack && spawn.quantity > 0; i++) {
             spawn.quantity--;
+
             const enemy = this.scene.physics.add.image(this.getRandomX(), this.getRandomY(), spawn.name);
             enemy.fullHealth = spawn.health;
             enemy.health = spawn.health;
@@ -46,6 +47,23 @@ class Spawn {
                 return (this.health / this.fullHealth) * 100;
             };
             enemy.bar = new HealthBar(this.scene, enemy);
+            enemy.animateDie = function() {
+                enemy.rotation = 1.7;
+                enemy.setVelocity(0, 0);
+                let soul = this.scene.add.image(enemy.x, enemy.y, 'soul');
+                this.scene.tweens.add({
+                    targets: [soul],
+                    duration: 2000,
+                    y: {from: enemy.y, to: enemy.y - 300},
+                    alpha: {from: 1, to: 0},
+                    ease: 'Power1',
+                    onComplete: function () {
+                        soul.visible = false;
+                        soul.destroy();
+                    }
+                });
+            }.bind(this);
+
             this.enemies.add(enemy);
         }
 
