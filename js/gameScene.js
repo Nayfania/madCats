@@ -44,6 +44,9 @@ class Scene extends Phaser.Scene {
         this.load.image('rat', 'img/rat.png');
         this.load.image('rat2', 'img/rat2.png');
         this.load.image('rat3', 'img/rat3.png');
+        this.load.image('rat4', 'img/rat4.png');
+        this.load.image('rat5', 'img/rat5.png');
+        this.load.image('boss', 'img/boss.png');
         this.load.image('bullet', 'img/arrow.png');
         this.load.image('heart', 'img/heart.png');
         this.load.image('lvlup', 'img/lvlup.png');
@@ -149,7 +152,7 @@ class Scene extends Phaser.Scene {
         this.physics.add.overlap(this.bullets, spawnEnemies, this.damageEnemy, null, this);
         this.enemies = spawnEnemies;
         this.timer = this.time.addEvent({
-            delay: 20000,
+            delay: 5000,
             callbackScope: this,
             loop: true,
             callback: function () {
