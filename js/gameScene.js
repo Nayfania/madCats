@@ -273,12 +273,7 @@ class Scene extends Phaser.Scene {
             this.enemies.remove(enemy);
 
             enemy.animateDie();
-
-            this.timeline.add({
-                in: 5000, once: false, run: () => {
-                    enemy.disableBody(true, true);
-                }
-            });
+            enemy.disableBody(true, true);
 
             this.spawn.enemiesCount();
             this.player.get().experience += enemy.experience;

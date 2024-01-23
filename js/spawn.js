@@ -48,7 +48,6 @@ class Spawn {
             };
             enemy.bar = new HealthBar(this.scene, enemy);
             enemy.animateDie = function() {
-                enemy.rotation = 1.7;
                 enemy.setVelocity(0, 0);
                 let soul = this.scene.add.image(enemy.x, enemy.y, 'soul');
                 this.scene.tweens.add({
@@ -58,7 +57,6 @@ class Spawn {
                     alpha: {from: 1, to: 0},
                     ease: 'Power1',
                     onComplete: function () {
-                        soul.visible = false;
                         soul.destroy();
                     }
                 });

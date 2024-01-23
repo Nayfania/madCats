@@ -3,6 +3,10 @@ class Menu extends Phaser.Scene {
     cat;
     points;
     health;
+    damage;
+    speed;
+    attackSpeed;
+    level;
     paws = [];
     skillManager;
 
@@ -19,6 +23,7 @@ class Menu extends Phaser.Scene {
         this.load.image('agility', 'img/agility.png');
         this.load.image('vitality', 'img/vitality.png');
         this.load.image('dexterity', 'img/dexterity.png');
+        this.load.image('logo', 'img/logo.jpg');
         this.load.spritesheet('paw', 'img/paw.png', {frameWidth: 50, frameHeight: 64});
     }
 
@@ -27,8 +32,7 @@ class Menu extends Phaser.Scene {
         this.switchScene();
         this.addCat();
 
-        this.add.text(750, 100, 'MAD =^.^= CAT', {fontSize: '60px', fill: '#70f6e6'})
-            .setStroke(0x777777, 1);
+        this.add.image(600, 70, 'logo');
 
         var test = this.add.graphics();
         test.lineStyle(2, 0x777777, 0.2);
@@ -38,6 +42,10 @@ class Menu extends Phaser.Scene {
         test.lineBetween(470, 475, 676, 475).setDepth(100);
 
         this.addHealth();
+        this.damage = this.add.text(700, 180, 'D:' + Player.damage(), {fontSize: '40px', fill: '#000000'});
+        this.speed = this.add.text(820, 180, 'S:' + Player.speed(), {fontSize: '40px', fill: '#000000'});
+        this.attackSpeed = this.add.text(980, 180, 'AS:' + (Player.attackSpeed() / 1000), {fontSize: '40px', fill: '#000000'});
+
         this.addStrength();
         this.addAgility();
         this.addVitality();
@@ -46,11 +54,25 @@ class Menu extends Phaser.Scene {
         this.points = this.add.text(470, 600, 'Points:' + Player.points, {fontSize: '40px', fill: '#e3e3e3'});
         this.updatePaws();
 
+        this.level = this.add.text(880, 480, 'LEVEL ' + Player.level, {
+            fontSize: '40px',
+            // fontStyle: 'strong',
+            fill: '#ff8437',
+            stroke: '#7c7c7c',
+            strokeThickness: 3
+        });
+
         this.addSkillPanel();
     }
 
     updatePoints() {
         this.points.text = 'Points:' + Player.points;
+        this.health.text = Player.currentHealth;
+        this.damage.text = 'D:' + Player.damage();
+        this.speed.text = 'S:' + Player.speed();
+        this.attackSpeed.text = 'AS:' + (Player.attackSpeed() / 1000);
+        this.level.text = 'LEVEL ' + Player.level;
+        this.updatePaws();
     }
 
     switchScene() {
@@ -68,8 +90,6 @@ class Menu extends Phaser.Scene {
         this.events.on('wake', () => {
             console.log('MenuScene wake');
             this.updatePoints();
-            this.updatePaws();
-            this.health.text = Player.currentHealth;
             this.skillManager.update();
         });
     }

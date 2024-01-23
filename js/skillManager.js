@@ -6,7 +6,6 @@ class SkillManager {
         description: '+50 HP -10 Speed',
         apply: function (scene) {
             Player.addHealth(50);
-            scene.health.text = Player.currentHealth;
             Player.baseSpeed -= 10;
         }
     }, {
@@ -57,11 +56,10 @@ class SkillManager {
                 skillButton.on('pointerdown', function () {
                     if (Player.points > 0) {
                         Player.points--;
-                        scene.updatePoints();
 
                         const skill = SkillManager.getSkillByName(SkillManager.skills[row].name);
                         skill.apply(scene);
-
+                        scene.updatePoints();
                         this.update();
                     }
                 }.bind(this));
