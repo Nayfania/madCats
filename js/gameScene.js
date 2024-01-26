@@ -193,7 +193,11 @@ class Scene extends Phaser.Scene {
             if (bullet && time > (this.lastFired + Player.attackSpeed())) {
                 this.lastFired = time;
                 bullet.hit = false;
-                bullet.setPosition(this.player.get().x - 50, this.player.get().y - 5);
+                if (this.player.get().flipX) {
+                    bullet.setPosition(this.player.get().x + 50, this.player.get().y - 5);
+                } else {
+                    bullet.setPosition(this.player.get().x - 55, this.player.get().y - 5);
+                }
                 bullet.setActive(true);
                 bullet.setVisible(true);
                 bullet.damage = this.player.get().damage;

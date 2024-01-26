@@ -79,6 +79,10 @@ class Player {
         this.player.setCollideWorldBounds(true);
         this.player.damage = 2;
         this.player.experience = 0;
+
+        this.scene.input.on('pointermove', (pointer) => {
+            this.player.flipX = this.player.x <= pointer.worldX;
+        });
     }
 
     animateIdle() {
@@ -125,26 +129,26 @@ class Player {
     playerMovement() {
         if (this.cursors.left.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Left
             this.player.setVelocityX(-Player.speed());
-            this.player.flipX = false;
+            // this.player.flipX = false;
         } else if (this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Right
             this.player.setVelocityX(Player.speed());
-            this.player.flipX = true;
+            // this.player.flipX = true;
         } else if (this.cursors.up.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Up
             this.player.setVelocityY(-Player.speed());
         } else if (this.cursors.down.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Down
             this.player.setVelocityY(Player.speed());
         } else if (this.cursors.left.isDown && this.cursors.down.isDown) { // Down and Left
             this.player.setVelocity(-Player.speed(), Player.speed());
-            this.player.flipX = false;
+            // this.player.flipX = false;
         } else if (this.cursors.left.isDown && this.cursors.up.isDown) { // Up and Left
             this.player.setVelocity(-Player.speed(), -Player.speed());
-            this.player.flipX = false;
+            // this.player.flipX = false;
         } else if (this.cursors.right.isDown && this.cursors.up.isDown) { // Up and Right
             this.player.setVelocity(Player.speed(), -Player.speed());
-            this.player.flipX = true;
+            // this.player.flipX = true;
         } else if (this.cursors.right.isDown && this.cursors.down.isDown) { // Down and Right
             this.player.setVelocity(Player.speed(), Player.speed());
-            this.player.flipX = true;
+            // this.player.flipX = true;
         }
 
         if (this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0) {
