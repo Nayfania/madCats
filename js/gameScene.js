@@ -167,6 +167,10 @@ class Scene extends Phaser.Scene {
                 this.enemies = spawnEnemies;
             }.bind(this)
         });
+
+        this.killed = this.add.text(16, 300, 'Killed: ' + Player.killed, {fontSize: '32px', fill: '#e0e0e0'});
+        this.killed.setScrollFactor(0, 0);
+        this.killed.setShadow(2, 2);
     }
 
     addHeart() {
@@ -278,6 +282,8 @@ class Scene extends Phaser.Scene {
             this.spawn.enemiesCount();
             this.player.get().experience += enemy.experience;
             this.expBar.gainExp(enemy.experience);
+            Player.killed++;
+            this.killed.text = 'Killed: ' + Player.killed;
             // console.log('experience: ' + this.player.get().experience);
         }
         bullet.hit = true;

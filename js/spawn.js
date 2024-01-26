@@ -22,7 +22,7 @@ class Spawn {
         this.scene = scene.scene;
         this.player = player;
 
-        this.wave = this.scene.add.text(16, 250, 'Wave: 1', {fontSize: '32px', fill: '#06ad0d'});
+        this.wave = this.scene.add.text(1600, 30, 'Wave: 1', {fontSize: '32px', fill: '#06ad0d'});
         this.wave.setScrollFactor(0, 0);
         this.wave.setShadow(2, 2);
 

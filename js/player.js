@@ -19,6 +19,8 @@ class Player {
     static baseSpeed = 100;
     static baseAttackSpeed = 1500; // ms
 
+    static killed = 0;
+
     static addHealth(value) {
         Player.health += value;
         Player.currentHealth += value;
