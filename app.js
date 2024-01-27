@@ -7,5 +7,9 @@ var game = new Phaser.Game({
         default: 'arcade',
     },
     transparent: true,
-    scene: [Scene, Menu]
+    scene: [
+        Game,
+        Menu,
+        Village
+    ]
 });

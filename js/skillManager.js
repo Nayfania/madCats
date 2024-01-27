@@ -36,6 +36,19 @@ class SkillManager {
         this.scene = scene;
     }
 
+    static addSkill(name, title, description, apply) {
+        SkillManager.skills.push({
+            name: 'CRIT',
+            title: 'Crit',
+            description: '+5% Crit Chance',
+            apply: apply()
+        });
+    }
+
+    getSkillRandom() {
+        return SkillManager.skills[Math.floor(Math.random()*SkillManager.skills.length)];
+    }
+
     addPanel() {
         this.grid = this.scene.rexUI.add.gridSizer({
             x: 1400, y: 370,
@@ -50,15 +63,15 @@ class SkillManager {
             createCellContainerCallback: function (scene, column, row, config) {
 
                 config.expand = true;
-                const skillButton = SkillManager.createButton(scene, SkillManager.skills[row].name, SkillManager.skills[row].title, SkillManager.skills[row].description)
+                const skill = this.getSkillRandom();
+                const skillButton = SkillManager.createButton(scene, skill.name, skill.title, skill.description)
                     .setInteractive();
 
                 skillButton.on('pointerdown', function () {
                     if (Player.points > 0) {
                         Player.points--;
 
-                        const skill = SkillManager.getSkillByName(SkillManager.skills[row].name);
-                        skill.apply(scene);
+                        SkillManager.getSkillByName(skill.name).apply(scene);
                         scene.updatePoints();
                         this.update();
                     }
@@ -75,7 +88,7 @@ class SkillManager {
         this.grid.visible = Player.points > 0;
     }
 
-    static createButton (scene, name, title, text) {
+    static createButton(scene, name, title, text) {
         return scene.rexUI.add.titleLabel({
             name: name,
             layoutMode: 0,

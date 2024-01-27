@@ -6,7 +6,7 @@ class Spawn {
 
     spawnNumber = 0;
     spawns = [
-        {name: 'rat', quantity: 5, pack: 10, health: 8, damage: 5, experience: 1},
+        {name: 'rat', quantity: 5, pack: 10, health: 18, damage: 5, experience: 1},
         {name: 'boss', quantity: 1, pack: 1, health: 30, damage: 7, experience: 2},
         {name: 'rat2', quantity: 5, pack: 10, health: 30, damage: 7, experience: 2},
         {name: 'rat3', quantity: 5, pack: 20, health: 50, damage: 10, experience: 3},

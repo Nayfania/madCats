@@ -8,7 +8,7 @@ class Player {
     static pointsPerLVLUp = 1;
 
     static health = 100;
-    static currentHealth = 100;
+    static currentHealth = 1;
 
     static strength = 1; // Damage
     static agility = 1; // Speed
@@ -17,7 +17,10 @@ class Player {
 
     static baseDamage = 1;
     static baseSpeed = 100;
-    static baseAttackSpeed = 1500; // ms
+    static baseAttackSpeed = 500; // ms
+
+    static critChance = 0; // %
+    static isCrit = false;
 
     static killed = 0;
 
@@ -27,8 +30,31 @@ class Player {
     }
 
     static damage() {
-        return Player.baseDamage + Player.strength * 2;
+        let damage = Player.baseDamage + Player.strength * 2;
+
+        if (Player.critChance > 0 && (Math.random() * 100) <= Player.critChance) {
+            Player.isCrit = true;
+            return damage * 2;
+        }
+
+        Player.isCrit = false;
+
+        return damage;
     };
+
+    takeDamage(enemy) {
+        this.showDamage(enemy.damage, this.player, "#ff0000");
+    }
+
+    damageEnemy(enemy) {
+        let damage = Player.damage();
+        enemy.health -= damage;
+        if (Player.isCrit) {
+            this.showDamage(damage, enemy, "#ffb937", 80, 'smoke');
+        } else {
+            this.showDamage(damage, enemy, "#ffffff");
+        }
+    }
 
     static speed = function () {
         return Player.baseSpeed + (Player.agility * 10);
@@ -129,30 +155,54 @@ class Player {
     playerMovement() {
         if (this.cursors.left.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Left
             this.player.setVelocityX(-Player.speed());
-            // this.player.flipX = false;
         } else if (this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Right
             this.player.setVelocityX(Player.speed());
-            // this.player.flipX = true;
         } else if (this.cursors.up.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Up
             this.player.setVelocityY(-Player.speed());
         } else if (this.cursors.down.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Down
             this.player.setVelocityY(Player.speed());
         } else if (this.cursors.left.isDown && this.cursors.down.isDown) { // Down and Left
             this.player.setVelocity(-Player.speed(), Player.speed());
-            // this.player.flipX = false;
         } else if (this.cursors.left.isDown && this.cursors.up.isDown) { // Up and Left
             this.player.setVelocity(-Player.speed(), -Player.speed());
-            // this.player.flipX = false;
         } else if (this.cursors.right.isDown && this.cursors.up.isDown) { // Up and Right
             this.player.setVelocity(Player.speed(), -Player.speed());
-            // this.player.flipX = true;
         } else if (this.cursors.right.isDown && this.cursors.down.isDown) { // Down and Right
             this.player.setVelocity(Player.speed(), Player.speed());
-            // this.player.flipX = true;
         }
 
         if (this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0) {
             this.animateRun();
         }
+    }
+
+    showDamage(text, object, color, fontSize = 42, animation = 'up') {
+        let floatingNumbers = new FloatingNumbersPlugin(this.scene, Phaser.Plugins.BasePlugin);
+        floatingNumbers.createFloatingText({
+            textOptions: {
+                fontFamily: 'shrewsbury',
+                fontSize: fontSize,
+                color: color,
+                strokeThickness: 2,
+                fontWeight: "bold",
+                stroke: "#000000",
+                shadow: {
+                    offsetX: 0,
+                    offsetY: 0,
+                    color: '#000',
+                    blur: 4,
+                    stroke: true,
+                    fill: false
+                }
+            },
+            text: text,
+            align: "top-center",
+            parentObject: object,
+            animation: animation, // "smoke", "explode", "fade", "up"
+            animationEase: "Linear",
+            timeToLive: 500,
+            animationDistance: 50,
+            fixedToCamera: false,
+        });
     }
 }

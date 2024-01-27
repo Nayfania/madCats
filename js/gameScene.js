@@ -1,4 +1,4 @@
-class Scene extends Phaser.Scene {
+class Game extends Phaser.Scene {
     player;
     enemies;
     lastFired = 0;
@@ -32,6 +32,7 @@ class Scene extends Phaser.Scene {
         this.load.rexScriptTag('js/spawn.js');
         this.load.rexScriptTag('js/skillManager.js');
         this.load.rexScriptTag('js/heart.js');
+        this.load.rexScriptTag('js/achieves/crit.js');
 
         this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
 
@@ -53,11 +54,15 @@ class Scene extends Phaser.Scene {
         this.load.image('soul', 'img/soul.png');
     }
 
+    init(message) {
+        console.log(message)
+    }
+
     create() {
 
         //  Set the camera and physics bounds to be the size of 4x4 bg images
-        this.cameras.main.setBounds(0, 0, Scene.battleGround.width, Scene.battleGround.height);
-        this.physics.world.setBounds(0, 0, Scene.battleGround.width, Scene.battleGround.height);
+        this.cameras.main.setBounds(0, 0, Game.battleGround.width, Game.battleGround.height);
+        this.physics.world.setBounds(0, 0, Game.battleGround.width, Game.battleGround.height);
 
         new Background(this.scene);
 
@@ -87,8 +92,13 @@ class Scene extends Phaser.Scene {
             console.log('GameScene slept');
         });
 
-        this.events.on('wake', () => {
+        this.events.on('wake', (system, data) => {
             console.log('GameScene wake');
+            if (data === 'VillageScene') {
+                // this.scene.remove('GameScene');
+                // this.scene.stop();
+                // this.scene.start();
+            }
             this.heart.update();
         });
 
@@ -181,16 +191,11 @@ class Scene extends Phaser.Scene {
     update(time, delta) {
         this.player.get().setVelocity(0);
 
-        if (Player.currentHealth <= 0) {
-            this.gameOver();
-            return;
-        }
-
         this.player.playerMovement();
 
-        if (this.input.activePointer.isDown) {
+        if (this.input.activePointer.isDown && time > (this.lastFired + Player.attackSpeed())) {
             const bullet = this.bullets.get();
-            if (bullet && time > (this.lastFired + Player.attackSpeed())) {
+            if (bullet) {
                 this.lastFired = time;
                 bullet.hit = false;
                 if (this.player.get().flipX) {
@@ -239,6 +244,10 @@ class Scene extends Phaser.Scene {
 
         if (this.spawn.movable) {
             Player.currentHealth -= enemy.damage;
+            if (Player.currentHealth <= 0) {
+                this.gameOver();
+                return;
+            }
         }
 
         this.spawn.movable = false;
@@ -253,15 +262,13 @@ class Scene extends Phaser.Scene {
         });
 
         this.cameras.main.shake(50, 0.005, true);
-        this.showDamage(enemy.damage, player, "#ff0000");
 
+        this.player.takeDamage(enemy);
         // console.log('damagePlayer');
     }
 
     damageEnemy(bullet, enemy) {
-        // console.log('damageEnemy');
-        // console.log('enemy fullHealth: ' + enemy.fullHealth);
-        // console.log('enemy health: ' + enemy.health);
+        console.log('damageEnemy');
 
         if (bullet.hit) {
             return;
@@ -274,7 +281,8 @@ class Scene extends Phaser.Scene {
             }
         });
 
-        enemy.health -= Player.damage();
+        this.player.damageEnemy(enemy);
+
         enemy.bar.update();
         if (enemy.health <= 0) {
 
@@ -292,52 +300,29 @@ class Scene extends Phaser.Scene {
         }
         bullet.hit = true;
 
-        this.showDamage(Player.damage(), enemy, "#ffffff");
+        Crit.update(this);
 
         // console.log('enemy health: ' + enemy.health);
         // console.log('bullet.damage: ' + bullet.damage);
         // console.log('Player.damage: ' + Player.damage());
     }
 
-    showDamage(text, object, color) {
-        var floatingNumbers = new FloatingNumbersPlugin(this, Phaser.Plugins.BasePlugin);
-        floatingNumbers.createFloatingText({
-            textOptions: {
-                fontFamily: 'shrewsbury',
-                fontSize: 42,
-                color: color,
-                strokeThickness: 2,
-                fontWeight: "bold",
-                stroke: "#000000",
-                shadow: {
-                    offsetX: 0,
-                    offsetY: 0,
-                    color: '#000',
-                    blur: 4,
-                    stroke: true,
-                    fill: false
-                }
-            },
-            text: text,
-            align: "top-center",
-            parentObject: object,
-            animation: "up", // "smoke", "explode", "fade", "up"
-            animationEase: "Linear",
-            timeToLive: 500,
-            animationDistance: 50,
-            fixedToCamera: false,
-        });
-    }
-
     gameOver() {
         this.physics.pause();
-        game.scene.pause('GameScene');
+        // game.scene.pause('GameScene');
 
         var gameOver = this.add.text(this.player.get().x - 500, this.player.get().y - 100, 'YOU DIED', {
             fontSize: '210px',
             fill: '#cb1414'
         });
         gameOver.setShadow(3, 3);
+
+        this.timeline.add({
+            in: 1000, run: () => {
+                game.scene.switch('GameScene', 'VillageScene');
+            }
+        });
+
         console.log('gameOver');
     }
 

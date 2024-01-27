@@ -2,7 +2,6 @@ class FloatingNumbersPlugin {
 
     constructor(scene, pluginManager) {
 
-
         /**
          * A handy reference to the Plugin Manager that is responsible for this plugin.
          * Can be used as a route to gain access to game systems and  events.
@@ -91,30 +90,9 @@ class FloatingNumbersPlugin {
             "pointX": [],
             "pointY": []
         };
-
-        /*
-        {
-                fontFamily: 'shrewsbury',
-                fontSize: 42,
-                color: Styles.getColor("gold", "string"),
-                strokeThickness: 2,
-                fontWeight: "bold",
-                stroke: Styles.getColor("black", "string"),
-                shadow: {
-                    offsetX: 0,
-                    offsetY: 0,
-                    color: '#000',
-                    blur: 4,
-                    stroke: true,
-                    fill: false
-                },
-            }
-        */
     }
 
     /**
-     *
-     *
      * @param {*} config
      * @memberof FloatingNumbersPlugin
      */
@@ -122,8 +100,6 @@ class FloatingNumbersPlugin {
 
         let _config = Object.assign(this.configObj, config);
         let textObj = {};
-        // console.log(_config);
-        // check text type //
         if (_config.textType === "normal") {
             textObj = this.scene.add.text(0, 0, _config.text, _config.textOptions);
 
@@ -142,9 +118,6 @@ class FloatingNumbersPlugin {
 
             textObj.isAnimating = false;
 
-            // console.log(_config.parentObject.x, _config.parentObject.y, textObj.x, textObj.y);
-            // TODO: add more options
-
             if (_config.store === false) {
                 this.scene.children.bringToTop(textObj);
                 this.animateText(_config, textObj);
@@ -155,23 +128,16 @@ class FloatingNumbersPlugin {
     }
 
     /**
-     *
-     *
      * @param {*} config
      * @memberof FloatingNumbersPlugin
      */
     animateText(config, textObj) {
 
-
         var path = { t: 0, vec: new Phaser.Math.Vector2() };
 
-        // console.log("Animating with: ", config);
-
-        /////
         if (textObj.isAnimating === false) {
             textObj.isAnimating = true;
             if (config.animation === "physics") {
-
 
             } else if (config.animation === "custom") {
 
@@ -398,8 +364,6 @@ class FloatingNumbersPlugin {
     }
 
     start() {
-
-
         this.systems.events.on('update', this.update, this);
         this.systems.events.once('shutdown', this.shutdown, this);
     }
@@ -430,13 +394,6 @@ class FloatingNumbersPlugin {
      */
     destroy() {
         this.shutdown();
-
-        // clean up //
-
-    }
-
-    test() {
-        console.log("test!");
     }
 
     hideTooltip(id, animate) {
@@ -492,8 +449,6 @@ class FloatingNumbersPlugin {
     }
 
     /**
-     *
-     *
      * @param {*} options
      * @memberof FloatingTextUI
      */
@@ -512,22 +467,17 @@ class FloatingNumbersPlugin {
             content.y = background.rect.centerY - content.displayHeight * 0.5;
         }
 
-
         container.add(content);
 
         container.x = options.x;
         container.y = options.y;
-        // console.log(options, container, background);
 
         this.tooltipCollection[options.id] = container;
 
         return container;
-
     }
 
     /**
-     *
-     *
      * @param {*} x
      * @param {*} y
      * @param {*} options
@@ -543,9 +493,6 @@ class FloatingNumbersPlugin {
             align: options.text.align || 'center'
         });
 
-        // console.log(options);
-
-
         if (options.hasShadow) {
             let shadowColor = options.text.shadowColor || "#1e1e1e";
             let blur = options.text.blur || 1;
@@ -556,5 +503,4 @@ class FloatingNumbersPlugin {
 
         return text;
     }
-
 }
