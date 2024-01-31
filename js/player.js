@@ -69,7 +69,18 @@ class Player {
     }
 
     create() {
-        this.cursors = this.scene.input.keyboard.createCursorKeys();
+        this.cursors = this.scene.input.keyboard.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.UP,
+            down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+            left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+            right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+            space: Phaser.Input.Keyboard.KeyCodes.SPACE,
+            shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            d: Phaser.Input.Keyboard.KeyCodes.D,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+        });
         this.scene.anims.create({
             key: 'idle',
             frames: this.scene.anims.generateFrameNumbers('player', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
@@ -163,21 +174,26 @@ class Player {
     }
 
     playerMovement() {
-        if (this.cursors.left.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Left
+        const left = this.cursors.left.isDown || this.cursors.a.isDown;
+        const right = this.cursors.right.isDown || this.cursors.d.isDown;
+        const up = this.cursors.up.isDown || this.cursors.w.isDown;
+        const down = this.cursors.down.isDown || this.cursors.s.isDown;
+
+        if (left && !up && !down) { // Left
             this.player.setVelocityX(-Player.speed());
-        } else if (this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) { // Right
+        } else if (right && !up && !down) { // Right
             this.player.setVelocityX(Player.speed());
-        } else if (this.cursors.up.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Up
+        } else if (up && !right && !left) { // Up
             this.player.setVelocityY(-Player.speed());
-        } else if (this.cursors.down.isDown && !this.cursors.right.isDown && !this.cursors.left.isDown) { // Down
+        } else if (down && !right && !left) { // Down
             this.player.setVelocityY(Player.speed());
-        } else if (this.cursors.left.isDown && this.cursors.down.isDown) { // Down and Left
+        } else if (left && down) { // Down and Left
             this.player.setVelocity(-Player.speed(), Player.speed());
-        } else if (this.cursors.left.isDown && this.cursors.up.isDown) { // Up and Left
+        } else if (left && up) { // Up and Left
             this.player.setVelocity(-Player.speed(), -Player.speed());
-        } else if (this.cursors.right.isDown && this.cursors.up.isDown) { // Up and Right
+        } else if (right && up) { // Up and Right
             this.player.setVelocity(Player.speed(), -Player.speed());
-        } else if (this.cursors.right.isDown && this.cursors.down.isDown) { // Down and Right
+        } else if (right && down) { // Down and Right
             this.player.setVelocity(Player.speed(), Player.speed());
         }
 
