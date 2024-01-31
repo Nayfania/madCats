@@ -54,8 +54,8 @@ class Game extends Phaser.Scene {
         this.load.image('soul', 'img/soul.png');
     }
 
-    init(message) {
-        console.log(message)
+    init() {
+        console.log('init');
     }
 
     create() {
@@ -82,9 +82,6 @@ class Game extends Phaser.Scene {
         this.timeline.play();
 
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC).on('down', function (event) {
-            console.log('ESC');
-            // game.scene.getScene('GameScene').scene.scene.input.keyboard.removeKey('ESC');
-            // game.scene.getScene('MenuScene').scene.scene.input.keyboard.addKey('ESC');
             game.scene.switch('GameScene', 'MenuScene');
         });
 
@@ -95,9 +92,9 @@ class Game extends Phaser.Scene {
         this.events.on('wake', (system, data) => {
             console.log('GameScene wake');
             if (data === 'VillageScene') {
-                // this.scene.remove('GameScene');
-                // this.scene.stop();
-                // this.scene.start();
+                this.scene.restart();
+                Player.reset();
+                console.log(Player.strength);
             }
             this.heart.update();
         });

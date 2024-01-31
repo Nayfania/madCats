@@ -38,10 +38,10 @@ class SkillManager {
 
     static addSkill(name, title, description, apply) {
         SkillManager.skills.push({
-            name: 'CRIT',
-            title: 'Crit',
-            description: '+5% Crit Chance',
-            apply: apply()
+            name: name,
+            title: title,
+            description: description,
+            apply: apply
         });
     }
 
@@ -71,7 +71,7 @@ class SkillManager {
                     if (Player.points > 0) {
                         Player.points--;
 
-                        SkillManager.getSkillByName(skill.name).apply(scene);
+                        skill.apply(scene);
                         scene.updatePoints();
                         this.update();
                     }

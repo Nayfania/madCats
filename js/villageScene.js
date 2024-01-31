@@ -52,6 +52,7 @@ class Village extends Phaser.Scene {
         this.addPerk(crit);
         crit.on('pointerdown', function (pointer, item) {
             if (crit.available) {
+                console.log('add crit skill');
                 crit2.setVisible(true);
                 crit.setVisible(false);
                 SkillManager.addSkill('CRIT', 'Crit', '+5% Crit Chance', function (scene) {

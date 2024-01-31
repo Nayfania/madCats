@@ -9,6 +9,10 @@ class Menu extends Phaser.Scene {
     level;
     paws = [];
     skillManager;
+    strength;
+    vitality;
+    dexterity;
+    agility;
 
     constructor() {
         super({key: 'MenuScene'});
@@ -66,6 +70,7 @@ class Menu extends Phaser.Scene {
     }
 
     updatePoints() {
+        console.log('Menu Scene: updatePoints');
         this.points.text = 'Points:' + Player.points;
         this.health.text = Player.currentHealth;
         this.damage.text = 'D:' + Player.damage();
@@ -73,6 +78,10 @@ class Menu extends Phaser.Scene {
         this.attackSpeed.text = 'AS:' + (Player.attackSpeed() / 1000);
         this.level.text = 'LEVEL ' + Player.level;
         this.updatePaws();
+        this.strength.text = Player.strength;
+        this.agility.text = Player.agility;
+        this.vitality.text = Player.vitality;
+        this.dexterity.text = Player.dexterity;
     }
 
     switchScene() {
@@ -120,42 +129,43 @@ class Menu extends Phaser.Scene {
 
     addStrength() {
         this.add.image(500, 300, 'damage');
-        const strength = this.add.text(550, 280, Player.strength, {fontSize: '50px', fill: '#cb1414'});
+        this.strength = this.add.text(550, 280, Player.strength, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 300, function () {
             Player.strength++;
-            strength.text = Player.strength;
-        });
+            this.strength.text = Player.strength;
+        }.bind(this));
     }
 
     addAgility() {
         this.add.image(500, 370, 'agility');
-        const agility = this.add.text(550, 350, Player.agility, {fontSize: '50px', fill: '#cb1414'});
+        this.agility = this.add.text(550, 350, Player.agility, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 370, function () {
             Player.agility++;
-            agility.text = Player.agility;
-        });
+            this.agility.text = Player.agility;
+        }.bind(this));
     }
 
     addVitality() {
         this.add.image(500, 440, 'vitality');
-        const vitality = this.add.text(550, 420, Player.vitality, {fontSize: '50px', fill: '#cb1414'});
+        this.vitality = this.add.text(550, 420, Player.vitality, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 440, function () {
             Player.vitality++;
-            vitality.text = Player.vitality;
-        });
+            this.vitality.text = Player.vitality;
+            Player.addHealth(10);
+        }.bind(this));
     }
 
     addDexterity() {
         this.add.image(500, 510, 'dexterity');
-        const dexterity = this.add.text(550, 490, Player.dexterity, {fontSize: '50px', fill: '#cb1414'});
+        this.dexterity = this.add.text(550, 490, Player.dexterity, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 510, function () {
             Player.dexterity++;
-            dexterity.text = Player.dexterity;
-        });
+            this.dexterity.text = Player.dexterity;
+        }.bind(this));
     }
 
     addPaw(x, y, func) {

@@ -111,6 +111,16 @@ class Player {
         });
     }
 
+    static reset() {
+        Player.currentHealth = Player.health;
+        Player.killed = 0;
+        Player.strength = 1;
+        Player.vitality = 1;
+        Player.dexterity = 1;
+        Player.agility = 1;
+        Player.level = 1;
+    }
+
     animateIdle() {
         if (!this.isRunning) {
             this.player.play('idle');

@@ -64,11 +64,4 @@ class HealthBar extends Phaser.GameObjects.Graphics {
 
         this.fillRect(this.options.x-2, this.options.y+2, d, this.options.height - 4);
     };
-
-    //  Called when a Scene is destroyed by the Scene Manager. There is no coming back from a destroyed Scene, so clear up all resources here.
-    destroy() {
-        // console.log('Health Bar: destroy');
-        this.clear();
-        this.scene = undefined;
-    }
 }
