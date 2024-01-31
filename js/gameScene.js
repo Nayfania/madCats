@@ -52,6 +52,7 @@ class Game extends Phaser.Scene {
         this.load.image('heart', 'img/heart.png');
         this.load.image('lvlup', 'img/lvlup.png');
         this.load.image('soul', 'img/soul.png');
+        this.load.image('coin', 'img/coin.png');
     }
 
     init() {
@@ -228,13 +229,13 @@ class Game extends Phaser.Scene {
     damagePlayer(player, enemy) {
 
         this.enemies.children.each(function (enemy) {
-            let x = enemy.x <= this.player.get().x ? enemy.x - 100 : enemy.x + 100;
-            let y = enemy.y <= this.player.get().y ? enemy.y - 100 : enemy.y + 100;
+            let x = enemy.x <= this.player.get().x ? enemy.x - 10 : enemy.x + 10;
+            let y = enemy.y <= this.player.get().y ? enemy.y - 10 : enemy.y + 10;
 
             this.physics.moveTo(enemy, x, y, Spawn.speed * 5);
         }, this);
         this.time.addEvent({
-            delay: 500, callback: function (scene) {
+            delay: 200, callback: function (scene) {
                 scene.spawn.movable = true;
             }, args: [this]
         });
@@ -294,6 +295,16 @@ class Game extends Phaser.Scene {
             Player.killed++;
             this.killed.text = 'Killed: ' + Player.killed;
             // console.log('experience: ' + this.player.get().experience);
+
+            if ((Math.random() * 100) <= 3) {
+                const coin = this.physics.add.image(enemy.x, enemy.y, 'coin');
+                const coinPickUp = this.physics.add.overlap(coin, this.player.get(), function (coin, player) {
+                    console.log('pick up Coin');
+                    Player.coins++;
+                    coin.destroy();
+                    coinPickUp.active = false;
+                }, null, this);
+            }
         }
         bullet.hit = true;
 

@@ -28,6 +28,7 @@ class Menu extends Phaser.Scene {
         this.load.image('vitality', 'img/vitality.png');
         this.load.image('dexterity', 'img/dexterity.png');
         this.load.image('logo', 'img/logo.jpg');
+        this.load.image('coin', 'img/coin.jpg');
         this.load.spritesheet('paw', 'img/paw.png', {frameWidth: 50, frameHeight: 64});
     }
 
@@ -55,7 +56,9 @@ class Menu extends Phaser.Scene {
         this.addVitality();
         this.addDexterity();
 
-        this.points = this.add.text(470, 600, 'Points:' + Player.points, {fontSize: '40px', fill: '#e3e3e3'});
+        this.add.image(500, 600, 'coin');
+        this.coins = this.add.text(540, 580, 'X ' + Player.coins, {fontSize: '40px', fill: '#eed44f'}).setShadow(1, 1);
+        this.points = this.add.text(1300, 600, 'Points:' + Player.points, {fontSize: '40px', fill: '#e3e3e3'});
         this.updatePaws();
 
         this.level = this.add.text(880, 480, 'LEVEL ' + Player.level, {
@@ -72,6 +75,7 @@ class Menu extends Phaser.Scene {
     updatePoints() {
         console.log('Menu Scene: updatePoints');
         this.points.text = 'Points:' + Player.points;
+        this.coins.text = 'X ' + Player.coins;
         this.health.text = Player.currentHealth;
         this.damage.text = 'D:' + Player.damage();
         this.speed.text = 'S:' + Player.speed();
@@ -177,16 +181,16 @@ class Menu extends Phaser.Scene {
         pawUp.on('pointerdown', function () {
             pawUp.visible = false;
             pawDown.visible = true;
-            if (Player.points > 0) {
+            if (Player.coins > 0) {
                 func();
-                Player.points--;
+                Player.coins--;
                 this.updatePoints();
                 this.updatePaws();
             }
         }, this);
 
         pawDown.on('pointerup', function () {
-            if (Player.points > 0) {
+            if (Player.coins > 0) {
                 pawUp.visible = true;
             }
             pawDown.visible = false;
@@ -197,7 +201,7 @@ class Menu extends Phaser.Scene {
 
     updatePaws() {
         this.paws.forEach(function (paw) {
-            paw.visible = Player.points > 0;
+            paw.visible = Player.coins > 0;
         });
     }
 

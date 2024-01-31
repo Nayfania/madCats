@@ -5,10 +5,12 @@ class Player {
 
     static level = 1;
     static points = 0;
+    static coins = 0;
     static pointsPerLVLUp = 1;
 
-    static health = 100;
-    static currentHealth = 1;
+    static baseHealth = 100;
+    static maxHealth = 100;
+    static currentHealth = 100;
 
     static strength = 1; // Damage
     static agility = 1; // Speed
@@ -25,7 +27,7 @@ class Player {
     static killed = 0;
 
     static addHealth(value) {
-        Player.health += value;
+        Player.maxHealth += value;
         Player.currentHealth += value;
     }
 
@@ -112,10 +114,9 @@ class Player {
             loop: true
         });
 
-        // this.player = this.scene.physics.add.image(1280, 1024, 'cat');
         this.player.setCollideWorldBounds(true);
-        this.player.damage = 2;
         this.player.experience = 0;
+        this.player.setCircle(60);
 
         this.scene.input.on('pointermove', (pointer) => {
             this.player.flipX = this.player.x <= pointer.worldX;
@@ -123,12 +124,12 @@ class Player {
     }
 
     static reset() {
-        Player.currentHealth = Player.health;
+        Player.currentHealth = Player.baseHealth;
+        Player.maxHealth = Player.baseHealth;
         Player.killed = 0;
-        Player.strength = 1;
-        Player.vitality = 1;
-        Player.dexterity = 1;
-        Player.agility = 1;
+        Player.baseDamage = 1;
+        Player.baseSpeed = 100;
+        Player.baseAttackSpeed = 500;
         Player.level = 1;
     }
 

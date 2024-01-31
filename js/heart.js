@@ -21,8 +21,8 @@ class Heart {
 
     update() {
         const overlay = this.scene.add.graphics();
-        let empty = (Player.health - Player.currentHealth) * (this.heart.height / Player.health);
-        let damage = (this.heart.height / Player.health) * Player.damage();
+        let empty = (Player.maxHealth - Player.currentHealth) * (this.heart.height / Player.maxHealth);
+        let damage = (this.heart.height / Player.maxHealth) * Player.damage();
         overlay.fillStyle(0x000000).fillRect(0, 0, 250, empty + damage + 10);
         overlay.setMask(this.heart.mask);
         overlay.setScrollFactor(0, 0);

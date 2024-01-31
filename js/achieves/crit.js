@@ -6,7 +6,7 @@ class Crit {
     static update(scene) {
         if (!Crit.completed) {
             Crit.count++;
-            if (Crit.count >= 1) {
+            if (Crit.count >= 10) {
                 Crit.completed = true;
 
                 var text = scene.add.text(scene.player.get().x - 200, scene.player.get().y - 350, 'Congratulations! Crit is unlocked!', {
@@ -27,7 +27,6 @@ class Crit {
 
                 console.log('Achievement: Crit: completed');
             }
-            console.log(Crit.count);
         }
     }
 
