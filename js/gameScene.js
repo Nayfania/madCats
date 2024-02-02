@@ -311,7 +311,7 @@ class Game extends Phaser.Scene {
                 const fish = this.physics.add.image(enemy.x, enemy.y, 'fish');
                 const fishPickUp = this.physics.add.overlap(fish, this.player.get(), function (fish, player) {
                     console.log('pick up Fish');
-                    Player.heal(30);
+                    this.player.heal(30);
                     this.heart.update();
                     fish.destroy();
                     fishPickUp.active = false;

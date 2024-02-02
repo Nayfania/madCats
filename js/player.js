@@ -31,8 +31,8 @@ class Player {
         Player.currentHealth += value;
     }
 
-    static heal(value) {
-
+    heal(value) {
+        this.showDamage('+'+value, this.get(), "#32de1d");
         if (Player.currentHealth === Player.maxHealth) {
             return;
         }
@@ -118,8 +118,6 @@ class Player {
             this.isRunning = false;
         }, this);
 
-        // this.player.preFX.addShadow();
-        // this.player.postFX.addShadow();
         this.animateIdle();
         this.scene.time.addEvent({
             callback: this.animateIdle,
@@ -135,6 +133,8 @@ class Player {
         this.scene.input.on('pointermove', (pointer) => {
             this.player.flipX = this.player.x <= pointer.worldX;
         });
+
+        this.floatingNumbers = new FloatingNumbersPlugin(this.scene, Phaser.Plugins.BasePlugin);
     }
 
     static reset() {
@@ -218,8 +218,7 @@ class Player {
     }
 
     showDamage(text, object, color, fontSize = 42, animation = 'up') {
-        let floatingNumbers = new FloatingNumbersPlugin(this.scene, Phaser.Plugins.BasePlugin);
-        floatingNumbers.createFloatingText({
+        this.floatingNumbers.createFloatingText({
             textOptions: {
                 fontFamily: 'shrewsbury',
                 fontSize: fontSize,

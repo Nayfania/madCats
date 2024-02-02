@@ -18,6 +18,8 @@ class Heart {
         });
         this.health.setScrollFactor(0, 0);
         this.health.setShadow(2, 2);
+
+        this.overlay = this.scene.add.graphics();
     }
 
     update() {
@@ -26,12 +28,7 @@ class Heart {
         let damage = (this.heart.height / Player.maxHealth);
         let height = empty + damage + 10;
 
-        if (this.overlay === undefined) {
-            this.overlay = this.scene.add.graphics();
-        } else {
-            this.overlay.destroy();
-            this.overlay = this.scene.add.graphics();
-        }
+        this.overlay.clear();
 
         this.overlay.fillStyle(0x000000).fillRect(0, 0, 250, height);
         this.overlay.setMask(this.heart.mask);
