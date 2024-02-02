@@ -53,6 +53,7 @@ class Game extends Phaser.Scene {
         this.load.image('lvlup', 'img/lvlup.png');
         this.load.image('soul', 'img/soul.png');
         this.load.image('coin', 'img/coin.png');
+        this.load.image('fish', 'img/fish.png');
     }
 
     init() {
@@ -296,7 +297,7 @@ class Game extends Phaser.Scene {
             this.killed.text = 'Killed: ' + Player.killed;
             // console.log('experience: ' + this.player.get().experience);
 
-            if ((Math.random() * 100) <= 3) {
+            if ((Math.random() * 100) <= 2) {
                 const coin = this.physics.add.image(enemy.x, enemy.y, 'coin');
                 const coinPickUp = this.physics.add.overlap(coin, this.player.get(), function (coin, player) {
                     console.log('pick up Coin');
@@ -304,6 +305,19 @@ class Game extends Phaser.Scene {
                     coin.destroy();
                     coinPickUp.active = false;
                 }, null, this);
+            }
+
+            if ((Math.random() * 100) <= 30) {
+                const fish = this.physics.add.image(enemy.x, enemy.y, 'fish');
+                const fishPickUp = this.physics.add.overlap(fish, this.player.get(), function (fish, player) {
+                    console.log('pick up Fish');
+                    Player.heal(30);
+                    this.heart.update();
+                    fish.destroy();
+                    fishPickUp.active = false;
+                }, null, this);
+
+                this.tweens.add({targets: [fish], duration: 300, y: {from: fish.y, to: fish.y - 40}, yoyo: true, repeat: -1});
             }
         }
         bullet.hit = true;

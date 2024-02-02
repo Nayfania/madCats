@@ -20,6 +20,7 @@ class Village extends Phaser.Scene {
         this.load.image('crit', 'img/crit.png');
         this.load.image('crit_2', 'img/crit_2.png');
         this.load.image('lock', 'img/lock.png');
+        this.load.image('reborn', 'img/reborn.jpg');
     }
 
     create() {
@@ -27,10 +28,8 @@ class Village extends Phaser.Scene {
 
         this.tt = new Tooltip(this);
 
-        this.add.text(this.sys.game.config.width / 2, this.sys.game.config.height - 100, 'Reborn!', {
-            fontSize: '25px',
-            fill: '#ef150d'
-        }).setInteractive().on('pointerdown', function () {
+        this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 100, 'reborn')
+            .setInteractive().on('pointerdown', function () {
             this.switch('GameScene', 'VillageScene');
         }, this);
 

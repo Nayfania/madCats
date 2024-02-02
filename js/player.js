@@ -31,6 +31,20 @@ class Player {
         Player.currentHealth += value;
     }
 
+    static heal(value) {
+
+        if (Player.currentHealth === Player.maxHealth) {
+            return;
+        }
+
+        if (Player.currentHealth + value <= Player.maxHealth) {
+            Player.currentHealth += value;
+            return;
+        }
+
+        Player.currentHealth = Player.maxHealth;
+    }
+
     static damage() {
         let damage = Player.baseDamage + Player.strength * 2;
 

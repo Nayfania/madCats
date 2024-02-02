@@ -1,6 +1,7 @@
 class Heart {
     heart;
     health;
+    overlay;
 
     constructor(scene) {
         this.scene = scene;
@@ -20,12 +21,21 @@ class Heart {
     }
 
     update() {
-        const overlay = this.scene.add.graphics();
+
         let empty = (Player.maxHealth - Player.currentHealth) * (this.heart.height / Player.maxHealth);
-        let damage = (this.heart.height / Player.maxHealth) * Player.damage();
-        overlay.fillStyle(0x000000).fillRect(0, 0, 250, empty + damage + 10);
-        overlay.setMask(this.heart.mask);
-        overlay.setScrollFactor(0, 0);
+        let damage = (this.heart.height / Player.maxHealth);
+        let height = empty + damage + 10;
+
+        if (this.overlay === undefined) {
+            this.overlay = this.scene.add.graphics();
+        } else {
+            this.overlay.destroy();
+            this.overlay = this.scene.add.graphics();
+        }
+
+        this.overlay.fillStyle(0x000000).fillRect(0, 0, 250, height);
+        this.overlay.setMask(this.heart.mask);
+        this.overlay.setScrollFactor(0, 0);
 
         this.health.text = 'Health: ' + Player.currentHealth;
     }
