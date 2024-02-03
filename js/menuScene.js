@@ -24,6 +24,8 @@ class Menu extends Phaser.Scene {
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.image('damage', 'img/damage.png');
         this.load.image('health', 'img/health.png');
+        this.load.image('speed', 'img/speed.jpg');
+        this.load.image('attackSpeed', 'img/attackSpeed.jpg');
         this.load.image('agility', 'img/agility.png');
         this.load.image('vitality', 'img/vitality.png');
         this.load.image('dexterity', 'img/dexterity.png');
@@ -42,14 +44,18 @@ class Menu extends Phaser.Scene {
         var test = this.add.graphics();
         test.lineStyle(2, 0x777777, 0.2);
         test.lineBetween(470, 235, 676, 235).setDepth(100);
-        test.lineBetween(470, 335, 676, 335).setDepth(100);
-        test.lineBetween(470, 405, 676, 405).setDepth(100);
-        test.lineBetween(470, 475, 676, 475).setDepth(100);
+        test.lineBetween(470, 335, 590, 335).setDepth(100);
+        test.lineBetween(470, 405, 590, 405).setDepth(100);
+        test.lineBetween(470, 475, 590, 475).setDepth(100);
 
         this.addHealth();
         this.damage = this.add.text(700, 180, 'D:' + Player.damage(), {fontSize: '40px', fill: '#000000'});
-        this.speed = this.add.text(820, 180, 'S:' + Player.speed(), {fontSize: '40px', fill: '#000000'});
-        this.attackSpeed = this.add.text(980, 180, 'AS:' + (Player.attackSpeed() / 1000), {fontSize: '40px', fill: '#000000'});
+
+        this.add.image(840, 200, 'speed');
+        this.speed = this.add.text(870, 180, ':'+Player.speed(), {fontSize: '40px', fill: '#000000'});
+
+        this.add.image(1020, 200, 'attackSpeed');
+        this.attackSpeed = this.add.text(1040, 180, ':' + (Player.attackSpeed() / 1000), {fontSize: '40px', fill: '#000000'});
 
         this.addStrength();
         this.addAgility();
@@ -78,8 +84,8 @@ class Menu extends Phaser.Scene {
         this.coins.text = 'X ' + Player.coins;
         this.health.text = Player.currentHealth;
         this.damage.text = 'D:' + Player.damage();
-        this.speed.text = 'S:' + Player.speed();
-        this.attackSpeed.text = 'AS:' + (Player.attackSpeed() / 1000);
+        this.speed.text = ':' + Player.speed();
+        this.attackSpeed.text = ':' + (Player.attackSpeed() / 1000);
         this.level.text = 'LEVEL ' + Player.level;
         this.updatePaws();
         this.strength.text = Player.strength;
