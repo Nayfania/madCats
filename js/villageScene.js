@@ -6,7 +6,7 @@ class Village extends Phaser.Scene {
                 files: [{
                     type: 'plugin',
                     key: 'rexscripttagloaderplugin',
-                    url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexscripttagloaderplugin.min.js',
+                    url: '/dist/rexscripttagloaderplugin.js',
                     start: true
                 }]
             }

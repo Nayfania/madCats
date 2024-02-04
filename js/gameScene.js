@@ -14,7 +14,7 @@ class Game extends Phaser.Scene {
                 files: [{
                     type: 'plugin',
                     key: 'rexscripttagloaderplugin',
-                    url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexscripttagloaderplugin.min.js',
+                    url: '/dist/rexscripttagloaderplugin.js',
                     start: true
                 }]
             }
@@ -34,7 +34,7 @@ class Game extends Phaser.Scene {
         this.load.rexScriptTag('js/heart.js');
         this.load.rexScriptTag('js/achieves/crit.js');
 
-        this.load.scenePlugin('rexuiplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js', 'rexUI', 'rexUI');
+        this.load.scenePlugin('rexuiplugin', '/dist/rexuiplugin.js', 'rexUI', 'rexUI');
 
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
         this.load.spritesheet('player2', 'img/cat2.png', {frameWidth: 117, frameHeight: 147});
