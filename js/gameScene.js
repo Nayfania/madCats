@@ -40,6 +40,7 @@ class Game extends Phaser.Scene {
         this.load.spritesheet('player2', 'img/cat2.png', {frameWidth: 117, frameHeight: 147});
         this.load.spritesheet('player_run', 'img/cat_run.png', {frameWidth: 117, frameHeight: 147});
         this.load.spritesheet('player_run2', 'img/cat_run2.png', {frameWidth: 117, frameHeight: 147});
+        this.load.spritesheet('satiety', 'img/satiety.png', {frameWidth: 201, frameHeight: 218});
 
         this.load.image('bg', 'img/background.jpeg');
         this.load.image('rat', 'img/rat.png');
@@ -70,8 +71,7 @@ class Game extends Phaser.Scene {
 
         this.addHeart();
 
-        this.player = new Player();
-        this.player.setScene(this.scene);
+        this.player = new Player(this.scene, this.heart);
         this.player.create();
 
         this.cameras.main.setSize(this.scale.width, this.scale.height);
@@ -158,7 +158,7 @@ class Game extends Phaser.Scene {
 
         this.spawn = new Spawn(this.scene, this.player);
         let spawnEnemies = this.spawn.next();
-        this.physics.add.overlap(this.player.get(), spawnEnemies, this.damagePlayer, null, this);
+        this.physics.add.overlap(this.player.get(), spawnEnemies, this.damagePlayerByEnemy, null, this);
         this.physics.add.overlap(this.bullets, spawnEnemies, this.damageEnemy, null, this);
         this.enemies = spawnEnemies;
         this.timer = this.time.addEvent({
@@ -166,12 +166,17 @@ class Game extends Phaser.Scene {
             callbackScope: this,
             loop: true,
             callback: function () {
+                this.player.hunger(50);
+                if (Player.hungry) {
+                    this.damagePlayer(5);
+                }
+
                 if (!this.spawn.hasNext()) {
                     return;
                 }
 
                 let spawnEnemies = this.spawn.next();
-                this.physics.add.overlap(this.player.get(), spawnEnemies, this.damagePlayer, null, this);
+                this.physics.add.overlap(this.player.get(), spawnEnemies, this.damagePlayerByEnemy, null, this);
                 this.physics.add.overlap(this.bullets, spawnEnemies, this.damageEnemy, null, this);
                 this.enemies = spawnEnemies;
             }.bind(this)
@@ -227,7 +232,7 @@ class Game extends Phaser.Scene {
         // console.log('timeInSeconds: ' + this.timeInSeconds);
     }
 
-    damagePlayer(player, enemy) {
+    damagePlayerByEnemy(player, enemy) {
 
         this.enemies.children.each(function (enemy) {
             let x = enemy.x <= this.player.get().x ? enemy.x - 10 : enemy.x + 10;
@@ -242,28 +247,29 @@ class Game extends Phaser.Scene {
         });
 
         if (this.spawn.movable) {
-            Player.currentHealth -= enemy.damage;
-            if (Player.currentHealth <= 0) {
-                this.gameOver();
-                return;
-            }
+            this.damagePlayer(enemy.damage);
         }
 
         this.spawn.movable = false;
 
-        this.heart.update();
+        // console.log('damagePlayer');
+    }
 
-        player.setTint(0xff0000);
+    damagePlayer(damage) {
+        this.player.takeDamage(damage);
+
+        if (Player.currentHealth <= 0) {
+            this.gameOver();
+        }
+
+        this.player.get().setTint(0xff0000);
         this.timeline.add({
             in: 100, once: false, run: () => {
-                player.setTint();
+                this.player.get().setTint();
             }
         });
 
         this.cameras.main.shake(50, 0.005, true);
-
-        this.player.takeDamage(enemy);
-        // console.log('damagePlayer');
     }
 
     damageEnemy(bullet, enemy) {
@@ -312,6 +318,7 @@ class Game extends Phaser.Scene {
                 const fishPickUp = this.physics.add.overlap(fish, this.player.get(), function (fish, player) {
                     console.log('pick up Fish');
                     this.player.heal(30);
+                    this.player.eat(30);
                     this.heart.update();
                     fish.destroy();
                     fishPickUp.active = false;

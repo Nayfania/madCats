@@ -12,6 +12,11 @@ class Player {
     static maxHealth = 100;
     static currentHealth = 100;
 
+    satiety = 100; // 0 < 30 < 70 < 100 < 130 < 200
+    satietyIcon;
+    static overate = false;
+    static hungry = false;
+
     static strength = 1; // Damage
     static agility = 1; // Speed
     static vitality = 1; // Health
@@ -25,6 +30,11 @@ class Player {
     static isCrit = false;
 
     static killed = 0;
+
+    constructor(scene, heart) {
+        this.scene = scene.scene;
+        this.heart = heart;
+    }
 
     static addHealth(value) {
         Player.maxHealth += value;
@@ -45,6 +55,45 @@ class Player {
         Player.currentHealth = Player.maxHealth;
     }
 
+    hunger(value) {
+        if ((this.satiety - value) < 0) {
+            this.satiety = 0;
+        } else {
+            this.satiety -= value;
+        }
+
+        this.updateSatiety();
+    }
+
+    eat(value) {
+        this.satiety += value;
+        this.updateSatiety();
+    }
+
+    updateSatiety() {
+        if (this.satietyIcon !== undefined) {
+            this.satietyIcon.destroy();
+        }
+
+        if (this.satiety > 130) {
+            this.satietyIcon = this.scene.add.image(1800, 110, 'satiety', 0).setScrollFactor(0, 0);
+            Player.overate = true;
+            Player.hungry = false;
+        } else if (this.satiety > 70 && this.satiety <= 130) {
+            this.satietyIcon = this.scene.add.image(1800, 110, 'satiety', 1).setScrollFactor(0, 0);
+            Player.overate = false;
+            Player.hungry = false;
+        } else if (this.satiety > 30 && this.satiety <= 70) {
+            this.satietyIcon = this.scene.add.image(1800, 110, 'satiety', 2).setScrollFactor(0, 0);
+            Player.overate = false;
+            Player.hungry = false;
+        } else {
+            this.satietyIcon = this.scene.add.image(1800, 110, 'satiety', 3).setScrollFactor(0, 0);
+            Player.overate = false;
+            Player.hungry = true;
+        }
+    }
+
     static damage() {
         let damage = Player.baseDamage + Player.strength * 2;
 
@@ -58,8 +107,10 @@ class Player {
         return damage;
     };
 
-    takeDamage(enemy) {
-        this.showDamage(enemy.damage, this.player, "#ff0000");
+    takeDamage(damage) {
+        Player.currentHealth -= damage;
+        this.showDamage(damage, this.player, "#ff0000");
+        this.heart.update();
     }
 
     damageEnemy(enemy) {
@@ -73,15 +124,12 @@ class Player {
     }
 
     static speed = function () {
-        return Player.baseSpeed + (Player.agility * 10);
+        let speed = Player.baseSpeed + (Player.agility * 10);
+        return Player.overate ? speed / 2 : speed;
     }
 
     static attackSpeed = function () {
         return Player.baseAttackSpeed - (Player.dexterity * 10);
-    }
-
-    setScene(scene) {
-        this.scene = scene.scene;
     }
 
     create() {
@@ -135,6 +183,8 @@ class Player {
         });
 
         this.floatingNumbers = new FloatingNumbersPlugin(this.scene, Phaser.Plugins.BasePlugin);
+
+        this.satietyIcon = this.scene.add.image(1800, 110, 'satiety', 1).setScrollFactor(0, 0);
     }
 
     static reset() {
