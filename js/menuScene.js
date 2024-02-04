@@ -26,6 +26,7 @@ class Menu extends Phaser.Scene {
         this.load.image('health', 'img/health.png');
         this.load.image('speed', 'img/speed.jpg');
         this.load.image('attackSpeed', 'img/attackSpeed.jpg');
+        this.load.image('strength', 'img/strength.png');
         this.load.image('agility', 'img/agility.png');
         this.load.image('vitality', 'img/vitality.png');
         this.load.image('dexterity', 'img/dexterity.png');
@@ -48,14 +49,18 @@ class Menu extends Phaser.Scene {
         test.lineBetween(470, 405, 590, 405).setDepth(100);
         test.lineBetween(470, 475, 590, 475).setDepth(100);
 
+        test.lineBetween(830, 180, 830, 230).setDepth(100);
+        test.lineBetween(1000, 180, 1000, 230).setDepth(100);
+
         this.addHealth();
-        this.damage = this.add.text(700, 180, 'D:' + Player.damage(), {fontSize: '40px', fill: '#000000'});
+        this.add.image(720, 200, 'damage');
+        this.damage = this.add.text(755, 180, Player.damage(), {fontSize: '40px', fill: '#000000'});
 
-        this.add.image(840, 200, 'speed');
-        this.speed = this.add.text(870, 180, ':'+Player.speed(), {fontSize: '40px', fill: '#000000'});
+        this.add.image(870, 200, 'speed');
+        this.speed = this.add.text(900, 180, Player.speed(), {fontSize: '40px', fill: '#000000'});
 
-        this.add.image(1020, 200, 'attackSpeed');
-        this.attackSpeed = this.add.text(1040, 180, ':' + (Player.attackSpeed() / 1000), {fontSize: '40px', fill: '#000000'});
+        this.add.image(1030, 200, 'attackSpeed');
+        this.attackSpeed = this.add.text(1060, 180, Player.attackSpeed() / 1000, {fontSize: '40px', fill: '#000000'});
 
         this.addStrength();
         this.addAgility();
@@ -83,9 +88,9 @@ class Menu extends Phaser.Scene {
         this.points.text = 'Points:' + Player.points;
         this.coins.text = 'X ' + Player.coins;
         this.health.text = Player.currentHealth;
-        this.damage.text = 'D:' + Player.damage();
-        this.speed.text = ':' + Player.speed();
-        this.attackSpeed.text = ':' + (Player.attackSpeed() / 1000);
+        this.damage.text = Player.damage();
+        this.speed.text = Player.speed();
+        this.attackSpeed.text = Player.attackSpeed() / 1000;
         this.level.text = 'LEVEL ' + Player.level;
         this.updatePaws();
         this.strength.text = Player.strength;
@@ -138,7 +143,7 @@ class Menu extends Phaser.Scene {
     }
 
     addStrength() {
-        this.add.image(500, 300, 'damage');
+        this.add.image(500, 300, 'strength');
         this.strength = this.add.text(550, 280, Player.strength, {fontSize: '50px', fill: '#cb1414'});
 
         this.addPaw(650, 300, function () {
