@@ -33,7 +33,6 @@ class Crit {
     static reset() {
         if (!Crit.completed) {
             Crit.count = 0;
-            console.log('Achievement: Crit: reset');
         }
     }
 

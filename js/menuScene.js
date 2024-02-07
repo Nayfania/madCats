@@ -101,10 +101,9 @@ class Menu extends Phaser.Scene {
 
     switchScene() {
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER).on('down', function (event) {
-            console.log('ESC');
-            // game.scene.getScene('MenuScene').scene.scene.input.keyboard.removeKey('ESC');
-            // game.scene.getScene('GameScene').scene.scene.input.keyboard.addKey('ESC');
-            game.scene.switch('MenuScene', 'GameScene');
+            if (!Player.needToChooseSkill) {
+                game.scene.switch('MenuScene', 'GameScene');
+            }
         });
 
         this.events.on('sleep', () => {
@@ -114,7 +113,7 @@ class Menu extends Phaser.Scene {
         this.events.on('wake', () => {
             console.log('MenuScene wake');
             this.updatePoints();
-            this.skillManager.update();
+            this.addSkillPanel();
         });
     }
 

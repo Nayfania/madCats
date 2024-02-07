@@ -149,6 +149,7 @@ class Game extends Phaser.Scene {
                 if (Player.level !== level) {
                     Player.level++;
                     Player.points += Player.pointsPerLVLUp;
+                    Player.needToChooseSkill = true;
 
                     this.player.animateLvlUp();
 

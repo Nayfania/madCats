@@ -7,6 +7,7 @@ class Player {
     static points = 0;
     static coins = 0;
     static pointsPerLVLUp = 1;
+    static needToChooseSkill = false;
 
     static baseHealth = 100;
     static maxHealth = 100;

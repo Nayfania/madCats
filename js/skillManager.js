@@ -1,9 +1,13 @@
 class SkillManager {
     grid;
+    static availableSkills;
+
     static skills = [{
-        name: 'FATTY_1',
-        title: 'Fatty 1',
+        name: 'FATTY',
+        title: 'Fatty',
         description: '+50 HP -10 Speed',
+        lvl: 1,
+        maxLVL: 5,
         apply: function (scene) {
             Player.addHealth(50);
             Player.baseSpeed -= 10;
@@ -12,6 +16,8 @@ class SkillManager {
         name: 'STRONG_PAW',
         title: 'Strong Paw',
         description: '+10 Damage -10 Attack Speed',
+        lvl: 1,
+        maxLVL: 5,
         apply: function (scene) {
             Player.baseDamage += 10;
             Player.baseAttackSpeed += 10;
@@ -20,6 +26,8 @@ class SkillManager {
         name: 'SPRY',
         title: 'Spry',
         description: '+20 Speed',
+        lvl: 1,
+        maxLVL: 5,
         apply: function (scene) {
             Player.baseSpeed += 20;
         }
@@ -27,6 +35,8 @@ class SkillManager {
         name: 'SPEEDY',
         title: 'Speedy',
         description: '+10 Attack Speed',
+        lvl: 1,
+        maxLVL: 5,
         apply: function (scene) {
             Player.baseAttackSpeed -= 10;
         }
@@ -36,20 +46,44 @@ class SkillManager {
         this.scene = scene;
     }
 
-    static addSkill(name, title, description, apply) {
+    static addSkill(name, title, description, apply, lvl = 1, maxLVL = 5) {
         SkillManager.skills.push({
             name: name,
             title: title,
             description: description,
-            apply: apply
+            apply: apply,
+            lvl: lvl,
+            maxLVL: maxLVL,
         });
     }
 
-    getSkillRandom() {
-        return SkillManager.skills[Math.floor(Math.random()*SkillManager.skills.length)];
+    static getSkillRandom() {
+        console.log('getSkillRandom');
+        const index = Phaser.Math.Between(0, SkillManager.availableSkills.length-1);
+        // let index = Phaser.Math.RND.pick(SkillManager.availableSkills);
+        if (SkillManager.availableSkills.length === 0) {
+            return null;
+        }
+
+        const skill = SkillManager.availableSkills[index];
+
+        if (SkillManager.availableSkills.length > 1) {
+            SkillManager.availableSkills.splice(index, 1);
+        } else {
+            SkillManager.availableSkills = [];
+        }
+
+        return skill;
     }
 
     addPanel() {
+        if (!Player.needToChooseSkill) {
+            return;
+        }
+
+        console.log('addPanel');
+        SkillManager.availableSkills = SkillManager.skills.filter((skill) => skill.lvl < skill.maxLVL);
+
         this.grid = this.scene.rexUI.add.gridSizer({
             x: 1400, y: 370,
             width: 300, height: 400,
@@ -63,17 +97,23 @@ class SkillManager {
             createCellContainerCallback: function (scene, column, row, config) {
 
                 config.expand = true;
-                const skill = this.getSkillRandom();
-                const skillButton = SkillManager.createButton(scene, skill.name, skill.title, skill.description)
+                const skill = SkillManager.getSkillRandom();
+                if (skill === null) {
+                    return null;
+                }
+
+                const skillButton = SkillManager.createButton(scene, skill.name, skill.title + ' (LVL '+skill.lvl+')', skill.description)
                     .setInteractive();
 
                 skillButton.on('pointerdown', function () {
                     if (Player.points > 0) {
                         Player.points--;
+                        Player.needToChooseSkill = false;
 
                         skill.apply(scene);
+                        skill.lvl++;
                         scene.updatePoints();
-                        this.update();
+                        this.grid.visible = false;
                     }
                 }.bind(this));
 
@@ -99,7 +139,7 @@ class SkillManager {
             iconMask: false,
             text: scene.add.text(0, 0, text, {fontSize: 20, fill: '#000000'}),
             align: {
-                title: 'center',
+                title: 'left',
                 text: 'left',
             },
             space: {
