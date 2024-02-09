@@ -6,7 +6,6 @@ class Tooltip {
         this.systems = scene.sys;
 
         this.tooltipCollection = {};
-        this.target = null;
     }
 
     hideTooltip(id, animate) {
@@ -72,20 +71,18 @@ class Tooltip {
         container.width = Math.max(title.displayWidth, description.displayWidth, condition.displayWidth);
         container.height = title.displayHeight + description.displayHeight + condition.displayHeight;
 
-        if (options.hasBackground) {
-            let background = this.createBackground(container, options.x, options.y, container.width, container.height);
+        let background = this.createBackground(container, options.x, options.y, container.width, container.height);
 
-            title.x = background.rect.x + 10;
-            description.x = background.rect.x + 10;
-            condition.x = background.rect.x + 10;
+        title.x = background.rect.x + 10;
+        description.x = background.rect.x + 10;
+        condition.x = background.rect.x + 10;
 
-            title.y = background.rect.y + 5;
-            description.y = background.rect.y + 30;
-            condition.y = background.rect.y + 55;
+        title.y = background.rect.y + 5;
+        description.y = background.rect.y + 30;
+        condition.y = background.rect.y + 55;
 
-            container.width = background.rect.width;
-            container.height = background.rect.height;
-        }
+        container.width = background.rect.width;
+        container.height = background.rect.height;
 
         container.add(title);
         container.add(description);
@@ -93,14 +90,12 @@ class Tooltip {
         container.x = options.x;
         container.y = options.y;
 
-        this.tooltipCollection[options.id] = {container: container, target: options.target, options: options};
-        this.target = options.target;
+        this.tooltipCollection[options.id] = {
+            container: container,
+            options: options
+        };
 
         return container;
-    }
-
-    getTarget(id) {
-        return this.tooltipCollection[id].target;
     }
 
     getHeight(id) {

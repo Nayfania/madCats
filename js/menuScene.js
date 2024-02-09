@@ -148,6 +148,7 @@ class Menu extends Phaser.Scene {
         this.addPaw(650, 300, function () {
             Player.strength++;
             this.strength.text = Player.strength;
+            KnockBack.update(this);
         }.bind(this));
     }
 

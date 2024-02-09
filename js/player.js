@@ -30,6 +30,8 @@ class Player {
     static critChance = 0; // %
     static isCrit = false;
 
+    static knockBackChance = 0; // %
+
     static killed = 0;
 
     constructor(scene, heart) {

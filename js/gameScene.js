@@ -33,6 +33,7 @@ class Game extends Phaser.Scene {
         this.load.rexScriptTag('js/skillManager.js');
         this.load.rexScriptTag('js/heart.js');
         this.load.rexScriptTag('js/achieves/crit.js');
+        this.load.rexScriptTag('js/achieves/knockBack.js');
 
         this.load.scenePlugin('rexuiplugin', '/dist/rexuiplugin.js', 'rexUI', 'rexUI');
 
@@ -278,6 +279,11 @@ class Game extends Phaser.Scene {
 
         if (bullet.hit) {
             return;
+        }
+
+        if (Player.knockBackChance > 0 && (Math.random() * 100) <= Player.knockBackChance) {
+            enemy.x = enemy.x <= this.player.get().x ? enemy.x - 100 : enemy.x + 100;
+            enemy.y = enemy.y <= this.player.get().y ? enemy.y - 100 : enemy.y + 100;
         }
 
         enemy.setTint(0xff0000);

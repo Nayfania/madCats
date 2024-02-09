@@ -17,6 +17,8 @@ class Village extends Phaser.Scene {
         this.plugins.get('rexscripttagloaderplugin').addToScene(this);
         this.load.rexScriptTag('js/lib/tooltips.js');
         this.load.rexScriptTag('js/achieves/crit.js');
+        this.load.rexScriptTag('js/achieves/critPower.js');
+        this.load.rexScriptTag('js/achieves/knockBack.js');
         this.load.image('crit', 'img/crit.png');
         this.load.image('crit_2', 'img/crit_2.png');
         this.load.image('lock', 'img/lock.png');
@@ -26,10 +28,30 @@ class Village extends Phaser.Scene {
     create() {
         console.log(this.scene.key);
 
+        this.switchScene();
+
         this.tt = new Tooltip(this);
 
+        const crit = new Crit(this);
+        crit.create();
+        this.addPerk(crit);
+
+        // let graphics = this.add.graphics({lineStyle: {width: 2, color: 0xdc9835}});
+        // graphics.lineBetween(crit.x, crit.y - 25, crit.x, crit.y - 75).setDepth(100);
+
+        const critPower = new CritPower(this);
+        critPower.create();
+        this.addPerk(critPower);
+
+        const knockBack = new KnockBack(this);
+        knockBack.create();
+        this.addPerk(knockBack);
+    }
+
+    switchScene() {
         this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 100, 'reborn')
-            .setInteractive().on('pointerdown', function () {
+            .setInteractive()
+            .on('pointerdown', function () {
             this.switch('GameScene', 'VillageScene');
         }, this);
 
@@ -40,36 +62,6 @@ class Village extends Phaser.Scene {
         this.events.on('wake', (e) => {
             console.log('VillageScene wake');
         });
-
-        const crit = this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 200, 'crit').setInteractive();
-        const crit2 = this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 200, 'crit_2').setVisible(false);
-        crit.id = 1;
-        crit.title = 'Crit';
-        crit.description = 'Chance to hit with multiple damage';
-        crit.condition = 'Unlock: 10 Hit in a row';
-        crit.available = Crit.completed;
-        this.addPerk(crit);
-        crit.on('pointerdown', function (pointer, item) {
-            if (crit.available) {
-                console.log('add crit skill');
-                crit2.setVisible(true);
-                crit.setVisible(false);
-                SkillManager.addSkill('CRIT', 'Crit', '+5% Crit Chance', function (scene) {
-                    Player.critChance += 5;
-                });
-            }
-        });
-
-        let graphics = this.add.graphics({lineStyle: {width: 2, color: 0xdc9835}});
-        graphics.lineBetween(crit.x, crit.y - 25, crit.x, crit.y - 75).setDepth(100);
-
-        const critPower = this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 300, 'crit').setInteractive();
-        critPower.id = 2;
-        critPower.title = 'Crit Power';
-        critPower.description = 'Empower crit hit damage';
-        critPower.condition = 'Unlock: 10 Crit Hit in a row';
-        critPower.available = false;
-        this.addPerk(critPower);
     }
 
     switch(to, data) {
@@ -88,25 +80,27 @@ class Village extends Phaser.Scene {
     }
 
     addPerk(perk) {
+        const icon = perk.getIcon();
         if (!perk.available) {
-            const lock = this.add.image(perk.x + 15, perk.y - 20, 'lock');
+            const lock = this.add.image(icon.x + 15, icon.y - 20, 'lock');
         }
 
         const tooltipID = perk.id;
         let tooltip = this.tt.createTooltip({
-            x: perk.x,
-            y: perk.y,
-            hasBackground: true,
+            x: icon.x,
+            y: icon.y,
             text: {title: perk.title, description: perk.description, condition: perk.condition},
-            id: tooltipID,
-            target: perk
+            id: tooltipID
         });
         this.tt.hideTooltip(tooltipID);
-        perk.on('pointerover', function (pointer, item) {
+        icon.on('pointerover', function (pointer, item) {
             this.tt.showTooltip(tooltipID, true);
         }, this);
-        perk.on('pointerout', function (pointer, item) {
+        icon.on('pointerout', function (pointer, item) {
             this.tt.hideTooltip(tooltipID, true);
+        }, this);
+        icon.on('pointerdown', function (pointer, item) {
+            perk.activate();
         }, this);
     }
 }
