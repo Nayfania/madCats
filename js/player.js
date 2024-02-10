@@ -17,6 +17,7 @@ class Player {
     satietyIcon;
     static overate = false;
     static hungry = false;
+    static hungerDamage = 5;
 
     static strength = 1; // Damage
     static agility = 1; // Speed
@@ -31,6 +32,7 @@ class Player {
     static isCrit = false;
 
     static knockBackChance = 0; // %
+    static regenerate = false;
 
     static killed = 0;
 
@@ -58,7 +60,8 @@ class Player {
         Player.currentHealth = Player.maxHealth;
     }
 
-    hunger(value) {
+    hunger() {
+        let value = Player.hungerDamage;
         if ((this.satiety - value) < 0) {
             this.satiety = 0;
         } else {
@@ -188,6 +191,8 @@ class Player {
         this.floatingNumbers = new FloatingNumbersPlugin(this.scene, Phaser.Plugins.BasePlugin);
 
         this.satietyIcon = this.scene.add.image(1800, 110, 'satiety', 1).setScrollFactor(0, 0);
+
+        this.regeneration();
     }
 
     static reset() {
@@ -296,6 +301,19 @@ class Player {
             timeToLive: 500,
             animationDistance: 50,
             fixedToCamera: false,
+        });
+    }
+
+    regeneration() {
+        this.scene.time.addEvent({
+            delay: 10000,
+            callbackScope: this,
+            loop: true,
+            callback: function () {
+                if (Player.regenerate) {
+                    this.heal(Player.vitality);
+                }
+            }.bind(this)
         });
     }
 }

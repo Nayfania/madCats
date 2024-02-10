@@ -19,8 +19,10 @@ class Village extends Phaser.Scene {
         this.load.rexScriptTag('js/achieves/crit.js');
         this.load.rexScriptTag('js/achieves/critPower.js');
         this.load.rexScriptTag('js/achieves/knockBack.js');
+        this.load.rexScriptTag('js/achieves/regeneration.js');
         this.load.image('crit', 'img/crit.png');
         this.load.image('crit_2', 'img/crit_2.png');
+        this.load.image('regen', 'img/regen.png');
         this.load.image('lock', 'img/lock.png');
         this.load.image('reborn', 'img/reborn.jpg');
     }
@@ -46,6 +48,10 @@ class Village extends Phaser.Scene {
         const knockBack = new KnockBack(this);
         knockBack.create();
         this.addPerk(knockBack);
+
+        const regeneration = new Regeneration(this);
+        regeneration.create();
+        this.addPerk(regeneration);
     }
 
     switchScene() {
@@ -83,6 +89,7 @@ class Village extends Phaser.Scene {
         const icon = perk.getIcon();
         if (!perk.available) {
             const lock = this.add.image(icon.x + 15, icon.y - 20, 'lock');
+            lock.preFX.addGlow(0xffffff);
         }
 
         const tooltipID = perk.id;

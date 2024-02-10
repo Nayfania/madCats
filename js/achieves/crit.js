@@ -3,10 +3,12 @@ class Crit {
     static count = 0;
     static activated = false;
 
+    static hitInARow = 20;
+
     id = 1;
     title = 'Crit';
     description = 'Chance to hit with multiple damage';
-    condition = 'Unlock: 10 Hit in a row';
+    condition = 'Unlock: ' + Crit.hitInARow + ' Hit in a row';
     available = Crit.completed;
 
     imageUnlearned;
@@ -35,7 +37,7 @@ class Crit {
     static update(scene) {
         if (!Crit.completed) {
             Crit.count++;
-            if (Crit.count >= 10) {
+            if (Crit.count >= Crit.hitInARow) {
                 Crit.completed = true;
 
                 var text = scene.add.text(game.config.width / 2 - 200, game.config.height / 2 - 350, 'Congratulations! Crit is unlocked!', {

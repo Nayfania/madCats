@@ -34,6 +34,7 @@ class Game extends Phaser.Scene {
         this.load.rexScriptTag('js/heart.js');
         this.load.rexScriptTag('js/achieves/crit.js');
         this.load.rexScriptTag('js/achieves/knockBack.js');
+        this.load.rexScriptTag('js/achieves/regeneration.js');
 
         this.load.scenePlugin('rexuiplugin', '/dist/rexuiplugin.js', 'rexUI', 'rexUI');
 
@@ -119,13 +120,9 @@ class Game extends Phaser.Scene {
                 trackStrokeColor: 0x000000
             },
             align: {},
-            space: {
-                left: 20, right: 20, top: 20, bottom: 20,
-                icon: 10,
-                bar: 10
-            },
+            space: {left: 20, right: 20, top: 20, bottom: 20, icon: 10, bar: 10},
             levelCounter: {
-                table: [0, 0, 1, 10, 20, 30, 40, 50, 70, 90, 100],
+                table: [0, 0, 10, 20, 30, 40, 50, 60, 70, 90, 100],
                 maxLevel: 10,
                 exp: 0,
             },
@@ -168,9 +165,9 @@ class Game extends Phaser.Scene {
             callbackScope: this,
             loop: true,
             callback: function () {
-                this.player.hunger(50);
+                this.player.hunger();
                 if (Player.hungry) {
-                    this.damagePlayer(5);
+                    this.damagePlayer(Player.hungerDamage);
                 }
 
                 if (!this.spawn.hasNext()) {
@@ -320,13 +317,14 @@ class Game extends Phaser.Scene {
                 }, null, this);
             }
 
-            if ((Math.random() * 100) <= 30) {
+            if ((Math.random() * 100) <= 5) {
                 const fish = this.physics.add.image(enemy.x, enemy.y, 'fish');
                 const fishPickUp = this.physics.add.overlap(fish, this.player.get(), function (fish, player) {
                     console.log('pick up Fish');
                     this.player.heal(30);
                     this.player.eat(30);
                     this.heart.update();
+                    Regeneration.update(this)
                     fish.destroy();
                     fishPickUp.active = false;
                 }, null, this);

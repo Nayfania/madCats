@@ -1,12 +1,14 @@
-class KnockBack {
+class Regeneration {
     static completed = false;
     static activated = false;
 
-    id = 3;
-    title = 'Knock Back';
-    description = 'Knock enemies back';
-    condition = 'Unlock: get 10 Strengths';
-    available = KnockBack.completed;
+    static fish = 0;
+
+    id = 4;
+    title = 'Regeneration';
+    description = 'Add possibility to regenerate health';
+    condition = 'Unlock: collect 10 Fish';
+    available = Regeneration.completed;
 
     imageLearned;
     imageUnlearned;
@@ -16,13 +18,14 @@ class KnockBack {
     }
 
     create() {
-        this.imageUnlearned = this.scene.add.image(game.config.width / 2 + 100, game.config.height - 400, 'crit')
+        this.imageUnlearned = this.scene.add.image(game.config.width / 2 + 100, game.config.height - 500, 'regen')
             .setInteractive();
-        this.imageLearned = this.scene.add.image(game.config.width / 2 + 100, game.config.height - 400, 'crit_2')
+        this.imageUnlearned.preFX.addGlow(0x0DEF98FF);
+        this.imageLearned = this.scene.add.image(game.config.width / 2 + 100, game.config.height - 500, 'crit_2')
             .setInteractive()
             .setVisible(false);
 
-        if (KnockBack.activated) {
+        if (Regeneration.activated) {
             this.imageLearned.setVisible(true);
             this.imageUnlearned.setVisible(false);
         }
@@ -33,13 +36,14 @@ class KnockBack {
     }
 
     static update(scene) {
-        if (!KnockBack.completed) {
-            if (Player.strength >= 1) {
-                KnockBack.completed = true;
+        if (!Regeneration.completed) {
+            Regeneration.fish++;
+            if (Regeneration.fish >= 10) {
+                Regeneration.completed = true;
 
-                var text = scene.add.text(game.config.width / 2 - 200, game.config.height / 2 - 350, 'Congratulations! KnockBack is unlocked!', {
+                var text = scene.add.text(game.config.width / 2 - 200, game.config.height / 2 - 350, 'Congratulations! Regeneration is unlocked!', {
                     fontSize: '25px',
-                    fill: '#ef150d'
+                    fill: '#0def98'
                 });
                 text.setShadow(2, 1);
 
@@ -59,14 +63,12 @@ class KnockBack {
     }
 
     activate() {
-        if (KnockBack.completed && !KnockBack.activated) {
+        if (Regeneration.completed && !Regeneration.activated) {
             console.log('Add KnockBack skill');
-            KnockBack.activated = true;
+            Regeneration.activated = true;
             this.imageLearned.setVisible(true);
             this.imageUnlearned.setVisible(false);
-            SkillManager.addSkill('KNOCK_BACK', 'Knock Back', '+10% Chance to Knock Back', function (scene) {
-                Player.knockBackChance += 10;
-            });
+            Player.regenerate = true;
         }
     }
 }
