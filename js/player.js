@@ -33,6 +33,7 @@ class Player {
 
     static knockBackChance = 0; // %
     static regenerate = false;
+    static healLvlUp = false;
 
     static killed = 0;
 

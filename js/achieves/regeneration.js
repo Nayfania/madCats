@@ -32,7 +32,7 @@ class Regeneration {
     }
 
     getIcon() {
-        return KnockBack.activated ? this.imageLearned : this.imageUnlearned;
+        return Regeneration.activated ? this.imageLearned : this.imageUnlearned;
     }
 
     static update(scene) {

@@ -20,9 +20,11 @@ class Village extends Phaser.Scene {
         this.load.rexScriptTag('js/achieves/critPower.js');
         this.load.rexScriptTag('js/achieves/knockBack.js');
         this.load.rexScriptTag('js/achieves/regeneration.js');
+        this.load.rexScriptTag('js/achieves/healLvlUp.js');
         this.load.image('crit', 'img/crit.png');
         this.load.image('crit_2', 'img/crit_2.png');
         this.load.image('regen', 'img/regen.png');
+        this.load.image('healLvlUp', 'img/healLvlUp.png');
         this.load.image('lock', 'img/lock.png');
         this.load.image('reborn', 'img/reborn.jpg');
     }
@@ -52,6 +54,10 @@ class Village extends Phaser.Scene {
         const regeneration = new Regeneration(this);
         regeneration.create();
         this.addPerk(regeneration);
+
+        const healLvlUp = new HealLvlUp(this);
+        healLvlUp.create();
+        this.addPerk(healLvlUp);
     }
 
     switchScene() {

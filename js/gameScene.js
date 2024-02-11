@@ -35,6 +35,7 @@ class Game extends Phaser.Scene {
         this.load.rexScriptTag('js/achieves/crit.js');
         this.load.rexScriptTag('js/achieves/knockBack.js');
         this.load.rexScriptTag('js/achieves/regeneration.js');
+        this.load.rexScriptTag('js/achieves/healLvlUp.js');
 
         this.load.scenePlugin('rexuiplugin', '/dist/rexuiplugin.js', 'rexUI', 'rexUI');
 
@@ -148,6 +149,11 @@ class Game extends Phaser.Scene {
                     Player.level++;
                     Player.points += Player.pointsPerLVLUp;
                     Player.needToChooseSkill = true;
+
+                    HealLvlUp.update(this);
+                    if (Player.healLvlUp) {
+                        this.player.heal(30);
+                    }
 
                     this.player.animateLvlUp();
 
