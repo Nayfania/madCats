@@ -4,7 +4,6 @@ class Game extends Phaser.Scene {
     lastFired = 0;
     timeline;
     heart;
-    expBar;
     static battleGround = {width: 1280 * 2, height: 1024 * 2};
 
     constructor() {
@@ -104,62 +103,7 @@ class Game extends Phaser.Scene {
             this.heart.update();
         });
 
-        var expBar = this.rexUI.add.expBar({
-            width: 1000,
-            background: this.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e),
-            // icon: this.add.rectangle(0, 0, 20, 20, COLOR_LIGHT),
-            nameText: this.add.text(0, 0, 'LEVEL 1', {fontSize: 24}),
-            valueText: this.rexUI.add.BBCodeText(0, 0, '', {fontSize: 24}),
-            valueTextFormatCallback: function (value, min, max) {
-                value = Math.floor(value);
-                return `[b]${value}[/b]/${max}`;
-            },
-            bar: {
-                height: 10,
-                barColor: 0xa57829,
-                trackColor: 0x260e04,
-                trackStrokeColor: 0x000000
-            },
-            align: {},
-            space: {left: 20, right: 20, top: 20, bottom: 20, icon: 10, bar: 10},
-            levelCounter: {
-                table: [0, 0, 10, 20, 30, 40, 50, 60, 70, 90, 100],
-                maxLevel: 10,
-                exp: 0,
-            },
-            easeDuration: 2000
-        });
-        this.expBar = expBar;
-        this.expBar.setLevel(Player.level);
-        this.expBar.setScrollFactor(0, 0);
-        this.expBar.setPosition(1000, 50)
-            .layout()
-            .on('levelup.start', function (level, val) {
-                // console.log('levelup.start', level)
-                // expBar.nameText = 'LEVEL '+level;
-            })
-            .on('levelup.end', function (level) {
-                // console.log('levelup.end', level)
-                // this.expBar.setValueText(level);
-                expBar.nameText = 'LEVEL ' + level;
-            })
-            .on('levelup.complete', function (level) {
-                // console.log('levelup.complete', level)
-                if (Player.level !== level) {
-                    Player.level++;
-                    Player.points += Player.pointsPerLVLUp;
-                    Player.needToChooseSkill = true;
-
-                    HealLvlUp.update(this);
-                    if (Player.healLvlUp) {
-                        this.player.heal(30);
-                    }
-
-                    this.player.animateLvlUp();
-
-                    game.scene.switch('GameScene', 'MenuScene');
-                }
-            }, this);
+        this.player.exp();
 
         this.spawn = new Spawn(this.scene, this.player);
         let spawnEnemies = this.spawn.next();
@@ -307,8 +251,7 @@ class Game extends Phaser.Scene {
             enemy.disableBody(true, true);
 
             this.spawn.enemiesCount();
-            this.player.get().experience += enemy.experience;
-            this.expBar.gainExp(enemy.experience);
+            this.player.addExp(enemy.experience);
             Player.killed++;
             this.killed.text = 'Killed: ' + Player.killed;
             // console.log('experience: ' + this.player.get().experience);

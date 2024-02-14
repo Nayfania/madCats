@@ -4,6 +4,7 @@ class Player {
     isRunning = false;
 
     static level = 1;
+    static expPercent = 100;
     static points = 0;
     static coins = 0;
     static pointsPerLVLUp = 1;
@@ -182,7 +183,6 @@ class Player {
         });
 
         this.player.setCollideWorldBounds(true);
-        this.player.experience = 0;
         this.player.setCircle(60);
 
         this.scene.input.on('pointermove', (pointer) => {
@@ -217,6 +217,69 @@ class Player {
             this.isRunning = true;
             this.player.play('run');
         }
+    }
+
+    exp() {
+        this.expBar = this.scene.rexUI.add.expBar({
+            width: 1000,
+            background: this.scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, 0x4e342e),
+            // icon: this.scene.add.rectangle(0, 0, 20, 20, 0x4e342e),
+            nameText: this.scene.add.text(0, 0, 'LEVEL 1', {fontSize: 24}),
+            valueText: this.scene.rexUI.add.BBCodeText(0, 0, '', {fontSize: 24}),
+            valueTextFormatCallback: function (value, min, max) {
+                value = Math.floor(value);
+                return `[b]${value}[/b]/${max}`;
+            },
+            bar: {
+                height: 10,
+                barColor: 0xa57829,
+                trackColor: 0x260e04,
+                trackStrokeColor: 0x000000
+            },
+            align: {},
+            space: {left: 20, right: 20, top: 20, bottom: 20, icon: 10, bar: 10},
+            levelCounter: {
+                table: [0, 0, 10, 20, 30, 40, 50, 60, 70, 90, 100],
+                maxLevel: 10,
+                exp: 0,
+            },
+            easeDuration: 2000
+        });
+        this.expBar.setLevel(Player.level);
+        this.expBar.setScrollFactor(0, 0);
+        this.expBar.setPosition(1000, 50)
+            .layout()
+            .on('levelup.start', function (level, val) {
+                // console.log('levelup.start', level)
+                // expBar.nameText = 'LEVEL '+level;
+            })
+            .on('levelup.end', function (level) {
+                // console.log('levelup.end', level)
+                // this.expBar.setValueText(level);
+                this.expBar.nameText = 'LEVEL ' + level;
+            }, this)
+            .on('levelup.complete', function (level) {
+                // console.log('levelup.complete', level)
+                if (Player.level !== level) {
+                    Player.level++;
+                    Player.points += Player.pointsPerLVLUp;
+                    Player.needToChooseSkill = true;
+
+                    HealLvlUp.update(this);
+                    if (Player.healLvlUp) {
+                        this.heal(30);
+                    }
+
+                    this.animateLvlUp();
+
+                    game.scene.switch('GameScene', 'MenuScene');
+                }
+            }, this);
+    }
+
+    addExp(experience) {
+        console.log('Got experience: '+(experience*Player.expPercent)/100)
+        this.expBar.gainExp((experience*Player.expPercent)/100);
     }
 
     animateLvlUp() {

@@ -25,20 +25,29 @@ class SkillManager {
     }, {
         name: 'SPRY',
         title: 'Spry',
-        description: '+20 Speed',
+        description: '+30 Speed',
         lvl: 1,
         maxLVL: 5,
         apply: function (scene) {
-            Player.baseSpeed += 20;
+            Player.baseSpeed += 30;
         }
     }, {
         name: 'SPEEDY',
         title: 'Speedy',
-        description: '+10 Attack Speed',
+        description: '+20 Attack Speed',
         lvl: 1,
         maxLVL: 5,
         apply: function (scene) {
-            Player.baseAttackSpeed -= 10;
+            Player.baseAttackSpeed -= 20;
+        }
+    }, {
+        name: 'GREEDY',
+        title: 'Greedy',
+        description: '+10% Exp gain',
+        lvl: 1,
+        maxLVL: 5,
+        apply: function (scene) {
+            Player.expPercent += 10;
         }
     }];
 
