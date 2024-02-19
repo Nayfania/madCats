@@ -1,7 +1,6 @@
 class Menu extends Phaser.Scene {
 
     cat;
-    points;
     health;
     damage;
     speed;
@@ -69,7 +68,6 @@ class Menu extends Phaser.Scene {
 
         this.add.image(500, 600, 'coin');
         this.coins = this.add.text(540, 580, 'X ' + Player.coins, {fontSize: '40px', fill: '#eed44f'}).setShadow(1, 1);
-        this.points = this.add.text(1300, 600, 'Points:' + Player.points, {fontSize: '40px', fill: '#e3e3e3'});
         this.updatePaws();
 
         this.level = this.add.text(880, 480, 'LEVEL ' + Player.level, {
@@ -85,7 +83,6 @@ class Menu extends Phaser.Scene {
 
     updatePoints() {
         console.log('Menu Scene: updatePoints');
-        this.points.text = 'Points:' + Player.points;
         this.coins.text = 'X ' + Player.coins;
         this.health.text = Player.currentHealth;
         this.damage.text = Player.damage();

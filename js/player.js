@@ -5,9 +5,7 @@ class Player {
 
     static level = 1;
     static expPercent = 100;
-    static points = 0;
     static coins = 0;
-    static pointsPerLVLUp = 1;
     static needToChooseSkill = false;
 
     static baseHealth = 100;
@@ -262,7 +260,6 @@ class Player {
                 // console.log('levelup.complete', level)
                 if (Player.level !== level) {
                     Player.level++;
-                    Player.points += Player.pointsPerLVLUp;
                     Player.needToChooseSkill = true;
 
                     HealLvlUp.update(this);

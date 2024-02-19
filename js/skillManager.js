@@ -115,8 +115,7 @@ class SkillManager {
                     .setInteractive();
 
                 skillButton.on('pointerdown', function () {
-                    if (Player.points > 0) {
-                        Player.points--;
+                    if (Player.needToChooseSkill) {
                         Player.needToChooseSkill = false;
 
                         skill.apply(scene);
@@ -134,7 +133,7 @@ class SkillManager {
     }
 
     update() {
-        this.grid.visible = Player.points > 0;
+        this.grid.visible = Player.needToChooseSkill;
     }
 
     static createButton(scene, name, title, text) {
