@@ -11,27 +11,23 @@ class Crit {
     condition = 'Unlock: ' + Crit.hitInARow + ' Hit in a row';
     available = Crit.completed;
 
-    imageUnlearned;
-    imageLearned;
+    icon;
 
     constructor(scene) {
         this.scene = scene;
     }
 
     create() {
-        this.imageUnlearned = this.scene.add.image(game.config.width / 2, game.config.height - 200, 'crit')
+        this.icon = this.scene.add.image(game.config.width / 2, game.config.height - 200, 'crit')
             .setInteractive();
-        this.imageLearned = this.scene.add.image(game.config.width / 2, game.config.height - 200, 'crit_2')
-            .setVisible(false);
 
         if (Crit.activated) {
-            this.imageLearned.setVisible(true);
-            this.imageUnlearned.setVisible(false);
+            this.icon.preFX.addGlow(0x0DEF98FF);
         }
     }
 
     getIcon() {
-        return Crit.activated ? this.imageLearned : this.imageUnlearned;
+        return this.icon;
     }
 
     static update(scene) {
@@ -71,8 +67,7 @@ class Crit {
         if (Crit.completed && !Crit.activated) {
             console.log('add crit skill');
             Crit.activated = true;
-            this.imageLearned.setVisible(true);
-            this.imageUnlearned.setVisible(false);
+            this.icon.preFX.addGlow(0x0DEF98FF);
             SkillManager.addSkill('CRIT', 'Crit', '+5% Crit Chance', function (scene) {
                 Player.critChance += 5;
             });

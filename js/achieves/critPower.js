@@ -9,26 +9,22 @@ class CritPower {
     condition = 'Unlock: 10 Crit Hit in a row';
     available = CritPower.completed;
 
-    imageLearned;
-    imageUnlearned;
+    icon;
 
     constructor(scene) {
         this.scene = scene;
     }
 
     create() {
-        this.imageUnlearned = this.scene.add.image(game.config.width / 2, game.config.height - 300, 'crit')
+        this.icon = this.scene.add.image(game.config.width / 2, game.config.height - 300, 'crit')
             .setInteractive();
-        this.imageLearned = this.scene.add.image(game.config.width / 2, game.config.height - 200, 'crit_2')
-            .setVisible(false);
 
         if (CritPower.activated) {
-            this.imageLearned.setVisible(true);
-            this.imageUnlearned.setVisible(false);
+            this.icon.preFX.addGlow(0x0DEF98FF);
         }
     }
 
     getIcon() {
-        return CritPower.activated ? this.imageLearned : this.imageUnlearned;
+        return this.icon;
     }
 }

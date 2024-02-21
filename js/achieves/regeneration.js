@@ -10,29 +10,23 @@ class Regeneration {
     condition = 'Unlock: collect 10 Fish';
     available = Regeneration.completed;
 
-    imageLearned;
-    imageUnlearned;
+    icon;
 
     constructor(scene) {
         this.scene = scene;
     }
 
     create() {
-        this.imageUnlearned = this.scene.add.image(game.config.width / 2 + 100, game.config.height - 500, 'regen')
+        this.icon = this.scene.add.image(game.config.width / 2 + 100, game.config.height - 500, 'regen')
             .setInteractive();
-        this.imageUnlearned.preFX.addGlow(0x0DEF98FF);
-        this.imageLearned = this.scene.add.image(game.config.width / 2 + 100, game.config.height - 500, 'crit_2')
-            .setInteractive()
-            .setVisible(false);
 
         if (Regeneration.activated) {
-            this.imageLearned.setVisible(true);
-            this.imageUnlearned.setVisible(false);
+            this.icon.preFX.addGlow(0x0DEF98FF);
         }
     }
 
     getIcon() {
-        return Regeneration.activated ? this.imageLearned : this.imageUnlearned;
+        return this.icon;
     }
 
     static update(scene) {
@@ -66,8 +60,7 @@ class Regeneration {
         if (Regeneration.completed && !Regeneration.activated) {
             console.log('Add Regeneration skill');
             Regeneration.activated = true;
-            this.imageLearned.setVisible(true);
-            this.imageUnlearned.setVisible(false);
+            this.icon.preFX.addGlow(0x0DEF98FF);
             Player.regenerate = true;
         }
     }
