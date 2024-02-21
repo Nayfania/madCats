@@ -64,7 +64,7 @@ class Regeneration {
 
     activate() {
         if (Regeneration.completed && !Regeneration.activated) {
-            console.log('Add KnockBack skill');
+            console.log('Add Regeneration skill');
             Regeneration.activated = true;
             this.imageLearned.setVisible(true);
             this.imageUnlearned.setVisible(false);

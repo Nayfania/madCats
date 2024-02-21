@@ -36,28 +36,14 @@ class Village extends Phaser.Scene {
 
         this.tt = new Tooltip(this);
 
-        const crit = new Crit(this);
-        crit.create();
-        this.addPerk(crit);
-
         // let graphics = this.add.graphics({lineStyle: {width: 2, color: 0xdc9835}});
         // graphics.lineBetween(crit.x, crit.y - 25, crit.x, crit.y - 75).setDepth(100);
 
-        const critPower = new CritPower(this);
-        critPower.create();
-        this.addPerk(critPower);
-
-        const knockBack = new KnockBack(this);
-        knockBack.create();
-        this.addPerk(knockBack);
-
-        const regeneration = new Regeneration(this);
-        regeneration.create();
-        this.addPerk(regeneration);
-
-        const healLvlUp = new HealLvlUp(this);
-        healLvlUp.create();
-        this.addPerk(healLvlUp);
+        this.addPerk(new Crit(this));
+        this.addPerk(new CritPower(this));
+        this.addPerk(new KnockBack(this));
+        this.addPerk(new Regeneration(this));
+        this.addPerk(new HealLvlUp(this));
     }
 
     switchScene() {
@@ -92,6 +78,7 @@ class Village extends Phaser.Scene {
     }
 
     addPerk(perk) {
+        perk.create();
         const icon = perk.getIcon();
         if (!perk.available) {
             const lock = this.add.image(icon.x + 15, icon.y - 20, 'lock');
