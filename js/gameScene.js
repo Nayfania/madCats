@@ -35,6 +35,7 @@ class Game extends Phaser.Scene {
         this.load.rexScriptTag('js/achieves/knockBack.js');
         this.load.rexScriptTag('js/achieves/regeneration.js');
         this.load.rexScriptTag('js/achieves/healLvlUp.js');
+        this.load.rexScriptTag('js/game/Butterflies.js');
 
         this.load.scenePlugin('rexuiplugin', '/dist/rexuiplugin.js', 'rexUI', 'rexUI');
 
@@ -131,14 +132,14 @@ class Game extends Phaser.Scene {
                 this.physics.add.overlap(this.player.get(), spawnEnemies, this.damagePlayerByEnemy, null, this);
                 this.physics.add.overlap(this.bullets, spawnEnemies, this.damageEnemy, null, this);
                 this.enemies = spawnEnemies;
-
-                this.spawnButterFlies();
             }.bind(this)
         });
 
         this.killed = this.add.text(16, 300, 'Killed: ' + Player.killed, {fontSize: '32px', fill: '#e0e0e0'});
         this.killed.setScrollFactor(0, 0);
         this.killed.setShadow(2, 2);
+
+        this.spawnButterFlies();
     }
 
     addHeart() {
@@ -147,51 +148,15 @@ class Game extends Phaser.Scene {
     }
 
     spawnButterFlies() {
-        const x = Phaser.Math.Between(50, Game.battleGround.width - 50);
-        const y = Phaser.Math.Between(50, Game.battleGround.width - 50);
-        const image = Phaser.Math.RND.pick(['butterfly_green', 'butterfly_gold', 'butterfly_purple']);
-        const butterfly = this.physics.add.image(x, y, image);
-        butterfly.type = image;
-        const butterflyPickUp = this.physics.add.overlap(butterfly, this.player.get(), function (butterfly, player) {
-            console.log('pick up Butterfly');
-            switch (butterfly.type) {
-                case 'butterfly_green':
-                    Player.expPercent *= 2;
-                    break;
-                case 'butterfly_gold':
-                    Player.baseDamage *= 2;
-                    break;
-                case 'butterfly_purple':
-                    Player.baseSpeed *= 2;
-                    Player.baseAttackSpeed /= 2;
-                    break;
+        const butterflies = new Butterflies(this);
+        this.time.addEvent({
+            delay: 5000,
+            callbackScope: this,
+            loop: true,
+            callback: function () {
+                butterflies.spawn();
             }
-
-            this.player.get().setTint(0x00ff00);
-            butterfly.destroy();
-            butterflyPickUp.active = false;
-            this.time.addEvent({
-                delay: 5000,
-                callbackScope: this,
-                loop: false,
-                callback: function () {
-                    console.log('switch off Butterfly');
-                    this.player.get().setTint();
-                    switch (butterfly.type) {
-                        case 'butterfly_green':
-                            Player.expPercent /= 2;
-                            break;
-                        case 'butterfly_gold':
-                            Player.baseDamage /= 2;
-                            break;
-                        case 'butterfly_purple':
-                            Player.baseSpeed /= 2;
-                            Player.baseAttackSpeed *= 2;
-                            break;
-                    }
-                }
-            });
-        }, null, this);
+        });
     }
 
     update(time, delta) {
