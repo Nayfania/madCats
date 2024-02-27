@@ -27,4 +27,12 @@ class CritPower {
     getIcon() {
         return this.icon;
     }
+
+    activate() {
+        if (CritPower.completed && !CritPower.activated) {
+            console.log('add Crit Power skill');
+            CritPower.activated = true;
+            this.icon.preFX.addGlow(0x0DEF98FF);
+        }
+    }
 }

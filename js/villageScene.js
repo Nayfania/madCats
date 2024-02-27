@@ -21,12 +21,14 @@ class Village extends Phaser.Scene {
         this.load.rexScriptTag('js/achieves/knockBack.js');
         this.load.rexScriptTag('js/achieves/regeneration.js');
         this.load.rexScriptTag('js/achieves/healLvlUp.js');
+        this.load.rexScriptTag('js/achieves/reborn.js');
         this.load.image('crit', 'img/achieves/crit.png');
         this.load.image('regen', 'img/achieves/regen.png');
         this.load.image('healLvlUp', 'img/achieves/healLvlUp.png');
         this.load.image('knockback', 'img/achieves/knockback.png');
+        this.load.image('reborn', 'img/achieves/reborn.png');
         this.load.image('lock', 'img/lock.png');
-        this.load.image('reborn', 'img/reborn.jpg');
+        this.load.image('play', 'img/reborn.jpg');
     }
 
     create() {
@@ -44,10 +46,11 @@ class Village extends Phaser.Scene {
         this.addPerk(new KnockBack(this));
         this.addPerk(new Regeneration(this));
         this.addPerk(new HealLvlUp(this));
+        this.addPerk(new Reborn(this));
     }
 
     switchScene() {
-        this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 100, 'reborn')
+        this.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 100, 'play')
             .setInteractive()
             .on('pointerdown', function () {
             this.switch('GameScene', 'VillageScene');

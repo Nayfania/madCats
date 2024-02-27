@@ -21,6 +21,7 @@ class Menu extends Phaser.Scene {
         this.load.scenePlugin('rexuiplugin', '/dist/rexuiplugin.js', 'rexUI', 'rexUI');
 
         this.load.spritesheet('player', 'img/cat.png', {frameWidth: 117, frameHeight: 147});
+        this.load.spritesheet('player2', 'img/cat2.png', {frameWidth: 117, frameHeight: 147});
         this.load.image('damage', 'img/damage.png');
         this.load.image('health', 'img/health.png');
         this.load.image('speed', 'img/speed.jpg');
@@ -120,12 +121,17 @@ class Menu extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('player', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
             frameRate: 8,
         });
+        this.anims.create({
+            key: 'menuPlayer2',
+            frames: this.anims.generateFrameNumbers('player2', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
+            frameRate: 8,
+        });
         this.cat = this.physics.add.sprite(this.sys.game.canvas.width / 2, this.sys.game.canvas.height / 2 - 50);
-        this.cat.preFX.addGlow();
-        this.cat.play('menuPlayer');
+        // this.cat.preFX.addGlow();
+        this.cat.play(Player.reborn ? 'menuPlayer2' : 'menuPlayer');
         this.time.addEvent({
             callback: function () {
-                this.cat.play('menuPlayer');
+                this.cat.play(Player.reborn ? 'menuPlayer2' : 'menuPlayer');
             },
             callbackScope: this,
             delay: 5000, // 1000 = 1 second

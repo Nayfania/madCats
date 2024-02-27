@@ -33,6 +33,7 @@ class Player {
     static knockBackChance = 0; // %
     static regenerate = false;
     static healLvlUp = false;
+    static reborn = false; // Agility - flee, Vitality - dfe, Dexterity - hit(?), Strength * 3
 
     static killed = 0;
 
@@ -47,7 +48,7 @@ class Player {
     }
 
     heal(value) {
-        this.showDamage('+'+value, this.get(), "#32de1d");
+        this.showDamage('+' + value, this.get(), "#32de1d");
         if (Player.currentHealth === Player.maxHealth) {
             return;
         }
@@ -101,7 +102,7 @@ class Player {
     }
 
     static damage() {
-        let damage = Player.baseDamage + Player.strength * 2;
+        let damage = Player.baseDamage + (Player.reborn ? Player.strength * 3 : Player.strength * 2);
 
         if (Player.critChance > 0 && (Math.random() * 100) <= Player.critChance) {
             Player.isCrit = true;
@@ -113,7 +114,18 @@ class Player {
         return damage;
     };
 
+    isEvaded() {
+        const evaded =  Player.reborn && (Math.random() * 100) <= Player.agility;
+        if (evaded) {
+            this.showDamage('EVADE', this.player, "#ffffff");
+        }
+        return evaded;
+    }
+
     takeDamage(damage) {
+        if (Player.reborn) {
+            damage -= Player.vitality;
+        }
         Player.currentHealth -= damage;
         this.showDamage(damage, this.player, "#ff0000");
         this.heart.update();
@@ -139,6 +151,8 @@ class Player {
     }
 
     create() {
+        console.log('Player create')
+
         this.cursors = this.scene.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.UP,
             down: Phaser.Input.Keyboard.KeyCodes.DOWN,
@@ -151,14 +165,28 @@ class Player {
             d: Phaser.Input.Keyboard.KeyCodes.D,
             s: Phaser.Input.Keyboard.KeyCodes.S,
         });
+
         this.scene.anims.create({
             key: 'idle',
             frames: this.scene.anims.generateFrameNumbers('player', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
             frameRate: 8,
         });
         this.scene.anims.create({
+            key: 'idle2',
+            frames: this.scene.anims.generateFrameNumbers('player2', {frames: [0, 1, 2, 2, 1, 0], end: 0}),
+            frameRate: 8,
+        });
+        this.scene.anims.create({
             key: 'run',
             frames: this.scene.anims.generateFrameNumbers('player_run', {
+                frames: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0],
+                end: 0
+            }),
+            frameRate: 16,
+        });
+        this.scene.anims.create({
+            key: 'run2',
+            frames: this.scene.anims.generateFrameNumbers('player_run2', {
                 frames: [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0],
                 end: 0
             }),
@@ -206,14 +234,14 @@ class Player {
 
     animateIdle() {
         if (!this.isRunning) {
-            this.player.play('idle');
+            this.player.play(Player.reborn ? 'idle2' : 'idle');
         }
     }
 
     animateRun() {
         if (!this.isRunning) {
             this.isRunning = true;
-            this.player.play('run');
+            this.player.play(Player.reborn ? 'run2' : 'run');
         }
     }
 
@@ -275,8 +303,8 @@ class Player {
     }
 
     addExp(experience) {
-        console.log('Got experience: '+(experience*Player.expPercent)/100)
-        this.expBar.gainExp((experience*Player.expPercent)/100);
+        console.log('Got experience: ' + (experience * Player.expPercent) / 100)
+        this.expBar.gainExp((experience * Player.expPercent) / 100);
     }
 
     animateLvlUp() {

@@ -35,6 +35,7 @@ class Game extends Phaser.Scene {
         this.load.rexScriptTag('js/achieves/knockBack.js');
         this.load.rexScriptTag('js/achieves/regeneration.js');
         this.load.rexScriptTag('js/achieves/healLvlUp.js');
+        this.load.rexScriptTag('js/achieves/reborn.js');
         this.load.rexScriptTag('js/game/Butterflies.js');
 
         this.load.scenePlugin('rexuiplugin', '/dist/rexuiplugin.js', 'rexUI', 'rexUI');
@@ -214,7 +215,9 @@ class Game extends Phaser.Scene {
         });
 
         if (this.spawn.movable) {
-            this.damagePlayer(enemy.damage);
+            if (!this.player.isEvaded()) {
+                this.damagePlayer(enemy.damage);
+            }
         }
 
         this.spawn.movable = false;
@@ -270,6 +273,7 @@ class Game extends Phaser.Scene {
 
             this.spawn.enemiesCount();
             this.player.addExp(enemy.experience);
+            Reborn.update(this);
             Player.killed++;
             this.killed.text = 'Killed: ' + Player.killed;
             // console.log('experience: ' + this.player.get().experience);
