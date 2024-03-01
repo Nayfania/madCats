@@ -1,4 +1,5 @@
 class SkillManager {
+    static size = 1;
     grid;
     static availableSkills;
 
@@ -6,6 +7,7 @@ class SkillManager {
         name: 'FATTY',
         title: 'Fatty',
         description: '+50 HP -10 Speed',
+        icon: 'fatty',
         lvl: 1,
         maxLVL: 5,
         apply: function (scene) {
@@ -16,6 +18,7 @@ class SkillManager {
         name: 'STRONG_PAW',
         title: 'Strong Paw',
         description: '+10 Damage -10 Attack Speed',
+        icon: 'strong_paw',
         lvl: 1,
         maxLVL: 5,
         apply: function (scene) {
@@ -26,6 +29,7 @@ class SkillManager {
         name: 'SPRY',
         title: 'Spry',
         description: '+30 Speed',
+        icon: 'fatty',
         lvl: 1,
         maxLVL: 5,
         apply: function (scene) {
@@ -35,6 +39,7 @@ class SkillManager {
         name: 'SPEEDY',
         title: 'Speedy',
         description: '+20 Attack Speed',
+        icon: 'fatty',
         lvl: 1,
         maxLVL: 5,
         apply: function (scene) {
@@ -44,6 +49,7 @@ class SkillManager {
         name: 'GREEDY',
         title: 'Greedy',
         description: '+10% Exp gain',
+        icon: 'fatty',
         lvl: 1,
         maxLVL: 5,
         apply: function (scene) {
@@ -68,7 +74,7 @@ class SkillManager {
 
     static getSkillRandom() {
         console.log('getSkillRandom');
-        const index = Phaser.Math.Between(0, SkillManager.availableSkills.length-1);
+        const index = Phaser.Math.Between(0, SkillManager.availableSkills.length - 1);
         // let index = Phaser.Math.RND.pick(SkillManager.availableSkills);
         if (SkillManager.availableSkills.length === 0) {
             return null;
@@ -90,7 +96,7 @@ class SkillManager {
             return;
         }
 
-        console.log('addPanel');
+        console.log('add Skill Panel');
         SkillManager.availableSkills = SkillManager.skills.filter((skill) => skill.lvl < skill.maxLVL);
 
         this.grid = this.scene.rexUI.add.gridSizer({
@@ -111,13 +117,12 @@ class SkillManager {
                     return null;
                 }
 
-                const skillButton = SkillManager.createButton(scene, skill.name, skill.title + ' (LVL '+skill.lvl+')', skill.description)
-                    .setInteractive();
+                const skillButton = SkillManager.createButton(scene, skill).setInteractive();
 
                 skillButton.on('pointerdown', function () {
                     if (Player.needToChooseSkill) {
                         Player.needToChooseSkill = false;
-
+                        Player.addSkill(skill)
                         skill.apply(scene);
                         skill.lvl++;
                         scene.updatePoints();
@@ -129,23 +134,19 @@ class SkillManager {
             }.bind(this)
         }).layout();
 
-        this.update();
-    }
-
-    update() {
         this.grid.visible = Player.needToChooseSkill;
     }
 
-    static createButton(scene, name, title, text) {
+    static createButton(scene, skill) {
         return scene.rexUI.add.titleLabel({
-            name: name,
+            name: skill.name,
             layoutMode: 0,
             background: scene.rexUI.add.roundRectangle(0, 0, 0, 0, 10).setStrokeStyle(2, 0xcb1414),
-            title: scene.add.text(0, 0, title, {fontSize: 24, fill: '#06ad0d'}),
+            title: scene.add.text(0, 0, skill.title + ' (LVL ' + skill.lvl + ')', {fontSize: 24, fill: '#06ad0d'}),
             separator: scene.rexUI.add.roundRectangle({height: 4, color: 0xBEBEBE}),
-            // icon: iconGameObject,
+            icon: scene.add.image(0, 0, skill.icon),
             iconMask: false,
-            text: scene.add.text(0, 0, text, {fontSize: 20, fill: '#000000'}),
+            text: scene.add.text(0, 0, skill.description, {fontSize: 20, fill: '#000000'}),
             align: {
                 title: 'left',
                 text: 'left',
@@ -155,7 +156,7 @@ class SkillManager {
                 innerLeft: 0, innerRight: 0, innerTop: 0, innerBottom: 0,
 
                 title: 0, titleLeft: 0, titleRight: 0,
-                icon: 0, iconTop: 0, iconBottom: 0,
+                icon: 10, iconTop: 0, iconBottom: 0,
                 text: 0, textLeft: 0, textRight: 0,
                 separator: 0, separatorLeft: 0, separatorRight: 0,
                 actionTop: 0, actionBottom: 0,
@@ -163,7 +164,39 @@ class SkillManager {
         });
     }
 
-    static getSkillByName(name) {
+    addIcons() {
+        console.log('add Icons Panel');
+
+        let size = Player.skills.length;
+        let x = 700 + (size * 20);
+        if (this.sizer !== undefined) {
+            this.sizer.destroy();
+            console.log('add Icons Panel destroy');
+        }
+        this.sizer = this.scene.rexUI.add.sizer({
+            x: x, y: 600,
+            width: 75,
+            height: 75,
+            orientation: 'x',
+            space: {left: 0, right: 0, top: 10, bottom: 10, item: 0}
+        });
+
+        for (let i = 0; i < size; i++) {
+            const item = this.scene.rexUI.add.badgeLabel({
+                main: this.scene.add.image(0, 0, Player.skills[i].icon),
+                rightTop: this.scene.add.text(0, 0, Player.skills[i].lvl - 1, {
+                    color: 'yellow',
+                    backgroundColor: '#260e04'
+                }),
+            });
+            this.sizer.add(item, {fitRatio: true})
+            // sizer.add(this.scene.add.image(0, 0, Player.skills[i].icon), { fitRatio: true })
+        }
+
+        this.sizer.layout();
+    }
+
+    static getIndexByName(name) {
         for (let i = 0; i < SkillManager.skills.length; i++) {
             if (SkillManager.skills[i].name === name) {
                 return SkillManager.skills[i];

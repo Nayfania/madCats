@@ -6,7 +6,6 @@ class Player {
     static level = 1;
     static expPercent = 100;
     static coins = 0;
-    static needToChooseSkill = false;
 
     static baseHealth = 100;
     static maxHealth = 100;
@@ -36,6 +35,9 @@ class Player {
     static reborn = false; // Agility - flee, Vitality - dfe, Dexterity - hit(?), Strength * 3
 
     static killed = 0;
+
+    static needToChooseSkill = false;
+    static skills = [];
 
     constructor(scene, heart) {
         this.scene = scene.scene;
@@ -404,5 +406,14 @@ class Player {
                 }
             }.bind(this)
         });
+    }
+
+    static addSkill(skill) {
+        const index = Player.skills.findIndex(o => o.name === skill.name);
+        if (index > -1) {
+            Player.skills[index] = skill;
+        } else {
+            Player.skills.push(skill);
+        }
     }
 }

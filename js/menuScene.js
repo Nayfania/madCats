@@ -1,6 +1,7 @@
 class Menu extends Phaser.Scene {
 
     cat;
+
     health;
     damage;
     speed;
@@ -8,6 +9,7 @@ class Menu extends Phaser.Scene {
     level;
     paws = [];
     skillManager;
+
     strength;
     vitality;
     dexterity;
@@ -33,6 +35,9 @@ class Menu extends Phaser.Scene {
         this.load.image('logo', 'img/logo.jpg');
         this.load.image('coin', 'img/coin.jpg');
         this.load.spritesheet('paw', 'img/paw.png', {frameWidth: 50, frameHeight: 64});
+
+        this.load.image('fatty', 'img/icons/fatty.png');
+        this.load.image('strong_paw', 'img/icons/strong_paw.png');
     }
 
     create() {
@@ -79,6 +84,7 @@ class Menu extends Phaser.Scene {
             strokeThickness: 3
         });
 
+        this.skillManager = new SkillManager(this);
         this.addSkillPanel();
     }
 
@@ -220,7 +226,7 @@ class Menu extends Phaser.Scene {
     }
 
     addSkillPanel() {
-        this.skillManager = new SkillManager(this);
         this.skillManager.addPanel();
+        this.skillManager.addIcons();
     }
 }
